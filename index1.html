@@ -1,0 +1,2028 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>國旗鑑別闖關大作戰 | 國際海關特工密令</title>
+  <meta name="description" content="專為國中生設計的國旗鑑別闖關遊戲，融合海關安檢與特工解密氛圍，破解易混淆國旗！">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Noto+Sans+TC:wght@400;500;700;900&family=Outfit:wght@600;800&display=swap" rel="stylesheet">
+  <style>
+    /* ==========================================================================
+       1. 變數與全域樣式 (CSS Variables & Base)
+       ========================================================================== */
+    :root {
+      --bg-dark: #0a0f1d;
+      --bg-card: rgba(18, 26, 47, 0.85);
+      --bg-card-hover: rgba(28, 40, 72, 0.95);
+      --border-color: rgba(56, 189, 248, 0.25);
+      --border-glow: rgba(56, 189, 248, 0.6);
+      
+      --cyan-agent: #38bdf8;
+      --cyan-glow: #0284c7;
+      --amber-alert: #f59e0b;
+      --emerald-pass: #10b981;
+      --rose-danger: #f43f5e;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      
+      --font-display: 'Outfit', 'Chakra Petch', 'Noto Sans TC', sans-serif;
+      --font-body: 'Noto Sans TC', sans-serif;
+      --font-tech: 'Chakra Petch', monospace;
+      
+      --shadow-hud: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+      --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.12) 0%, transparent 60%),
+        radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.08) 0%, transparent 50%),
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+      color: var(--text-main);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 16px;
+      overflow-x: hidden;
+    }
+
+    /* ==========================================================================
+       2. 頂部導航與特工狀態列 (Agent Header HUD)
+       ========================================================================== */
+    .agent-header {
+      width: 100%;
+      max-width: 960px;
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 12px 20px;
+      margin-bottom: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      box-shadow: var(--shadow-hud);
+      position: sticky;
+      top: 12px;
+      z-index: 100;
+    }
+
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #0284c7, #38bdf8);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+    }
+
+    .brand-text h1 {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-text .sub-label {
+      font-family: var(--font-tech);
+      font-size: 0.75rem;
+      color: var(--cyan-agent);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .hud-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .agent-badge-pill {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--border-color);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-family: var(--font-tech);
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--cyan-agent);
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--emerald-pass);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--emerald-pass);
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .btn-icon {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      font-size: 1.1rem;
+    }
+
+    .btn-icon:hover {
+      background: var(--cyan-glow);
+      border-color: var(--cyan-agent);
+      transform: translateY(-2px);
+    }
+
+    /* ==========================================================================
+       3. 遊戲主舞台與進度追蹤器 (Progress HUD)
+       ========================================================================== */
+    .game-container {
+      width: 100%;
+      max-width: 960px;
+      position: relative;
+    }
+
+    .level-stepper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .level-stepper::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 10%;
+      right: 10%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      z-index: 1;
+      transform: translateY(-50%);
+    }
+
+    .step-progress-fill {
+      position: absolute;
+      top: 50%;
+      left: 10%;
+      width: 0%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--cyan-agent), var(--emerald-pass));
+      box-shadow: 0 0 10px var(--cyan-agent);
+      z-index: 2;
+      transform: translateY(-50%);
+      transition: width 0.4s ease;
+    }
+
+    .step-node {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .step-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #111827;
+      border: 2px solid var(--text-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-tech);
+      font-weight: 700;
+      color: var(--text-muted);
+      transition: var(--transition-smooth);
+      font-size: 1rem;
+    }
+
+    .step-node.active .step-circle {
+      border-color: var(--cyan-agent);
+      background: rgba(2, 132, 199, 0.3);
+      color: #ffffff;
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.6);
+      transform: scale(1.1);
+    }
+
+    .step-node.completed .step-circle {
+      border-color: var(--emerald-pass);
+      background: var(--emerald-pass);
+      color: #ffffff;
+      box-shadow: 0 0 14px rgba(16, 185, 129, 0.5);
+    }
+
+    .step-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-dim);
+      transition: var(--transition-smooth);
+      white-space: nowrap;
+    }
+
+    .step-node.active .step-label {
+      color: var(--cyan-agent);
+      font-weight: 700;
+    }
+
+    .step-node.completed .step-label {
+      color: var(--emerald-pass);
+    }
+
+    /* ==========================================================================
+       4. 卡片視圖切換 (View Transitions: Welcome, Question, Finish)
+       ========================================================================== */
+    .view-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 32px 28px;
+      box-shadow: var(--shadow-hud);
+      display: none;
+      animation: fadeInCard 0.4s ease forwards;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .view-card.active {
+      display: block;
+    }
+
+    @keyframes fadeInCard {
+      from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.99);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* 裝飾性特工水印與條紋 */
+    .view-card::after {
+      content: "OFFICIAL CUSTOMS CLEARANCE ARCHIVE // TOP SECRET";
+      position: absolute;
+      bottom: 12px;
+      right: 20px;
+      font-family: var(--font-tech);
+      font-size: 0.65rem;
+      color: rgba(255, 255, 255, 0.05);
+      letter-spacing: 2px;
+      pointer-events: none;
+    }
+
+    /* ==========================================================================
+       5. 歡迎頁面 (Welcome Screen)
+       ========================================================================== */
+    .welcome-content {
+      text-align: center;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .dossier-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: var(--amber-alert);
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-family: var(--font-tech);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+
+    .welcome-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 2.75rem);
+      font-weight: 900;
+      line-height: 1.25;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #ffffff 40%, var(--cyan-agent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .welcome-desc {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 36px;
+      text-align: left;
+    }
+
+    .feature-item {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .feature-icon {
+      font-size: 1.6rem;
+      line-height: 1;
+    }
+
+    .feature-text h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: #ffffff;
+    }
+
+    .feature-text p {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      line-height: 1.4;
+    }
+
+    .btn-action {
+      background: linear-gradient(135deg, #0284c7, #0ea5e9);
+      color: #ffffff;
+      border: none;
+      padding: 16px 36px;
+      border-radius: 14px;
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(14, 165, 233, 0.4);
+      transition: var(--transition-smooth);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-action:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 8px 30px rgba(14, 165, 233, 0.6);
+      background: linear-gradient(135deg, #0369a1, #0284c7);
+    }
+
+    .btn-action:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    /* ==========================================================================
+       6. 關卡進行畫面 (Level Playing Screen)
+       ========================================================================== */
+    .mission-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.12);
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+    }
+
+    .mission-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .mission-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-tech);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      padding: 4px 12px;
+      border-radius: 8px;
+      width: fit-content;
+    }
+
+    .badge-easy {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: var(--emerald-pass);
+    }
+
+    .badge-medium {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: var(--amber-alert);
+    }
+
+    .badge-boss {
+      background: rgba(244, 63, 94, 0.15);
+      border: 1px solid rgba(244, 63, 94, 0.4);
+      color: var(--rose-danger);
+    }
+
+    .mission-target-title {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .target-highlight {
+      color: var(--cyan-agent);
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      text-decoration-color: rgba(56, 189, 248, 0.4);
+    }
+
+    .mission-instruction {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .mission-actions-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-hint {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: var(--amber-alert);
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-hint:hover {
+      background: rgba(245, 158, 11, 0.2);
+      border-color: var(--amber-alert);
+      transform: translateY(-1px);
+    }
+
+    /* 特工機密提示卡 (摺疊/展開) */
+    .hint-drawer {
+      background: rgba(30, 41, 59, 0.95);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      display: none;
+      animation: slideDown 0.3s ease forwards;
+    }
+
+    .hint-drawer.open {
+      display: block;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hint-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--amber-alert);
+      font-weight: 700;
+      font-size: 0.92rem;
+      margin-bottom: 6px;
+    }
+
+    .hint-text {
+      font-size: 0.9rem;
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    /* 3選1 國旗查驗選項卡 (Flag Options Grid) */
+    .flags-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+
+    @media (max-width: 768px) {
+      .flags-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+    }
+
+    .flag-card {
+      background: rgba(15, 23, 42, 0.8);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 18px;
+      padding: 16px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .flag-card:hover {
+      border-color: var(--cyan-agent);
+      background: var(--bg-card-hover);
+      transform: translateY(-6px);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5), 0 0 20px rgba(56, 189, 248, 0.25);
+    }
+
+    .flag-card:focus-visible {
+      outline: 3px solid var(--cyan-agent);
+      outline-offset: 4px;
+    }
+
+    .flag-badge-num {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-family: var(--font-tech);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--cyan-agent);
+      z-index: 2;
+    }
+
+    .flag-img-container {
+      width: 100%;
+      height: 160px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #090d16;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      position: relative;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+    }
+
+    .flag-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+      display: block;
+    }
+
+    .flag-card:hover .flag-img {
+      transform: scale(1.04);
+    }
+
+    /* 雷達掃描光影 */
+    .flag-card::before {
+      content: '';
+      position: absolute;
+      top: -100%;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, transparent, rgba(56, 189, 248, 0.15), transparent);
+      pointer-events: none;
+      transition: 0.6s;
+    }
+
+    .flag-card:hover::before {
+      top: 100%;
+    }
+
+    .flag-info {
+      width: 100%;
+    }
+
+    .flag-name {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+
+    .flag-subtext {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      font-family: var(--font-tech);
+      margin-bottom: 12px;
+    }
+
+    .btn-verify-chip {
+      width: 100%;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid var(--border-color);
+      color: var(--cyan-agent);
+      padding: 10px 0;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+      transition: var(--transition-smooth);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .flag-card:hover .btn-verify-chip {
+      background: var(--cyan-agent);
+      color: #0b1120;
+      border-color: var(--cyan-agent);
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+    }
+
+    /* 答錯震動特效 */
+    .shake-error {
+      animation: alertShake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+      border-color: var(--rose-danger) !important;
+      box-shadow: 0 0 25px rgba(244, 63, 94, 0.5) !important;
+    }
+
+    @keyframes alertShake {
+      10%, 90% { transform: translate3d(-3px, 0, 0); }
+      20%, 80% { transform: translate3d(5px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+      40%, 60% { transform: translate3d(6px, 0, 0); }
+    }
+
+    /* ==========================================================================
+       7. 通關印章動畫與覆蓋層 (Approved Stamp Overlay)
+       ========================================================================== */
+    .clearance-stamp-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 15, 29, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      padding: 20px;
+    }
+
+    .clearance-stamp-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .stamp-container {
+      position: relative;
+      text-align: center;
+      max-width: 460px;
+      width: 100%;
+    }
+
+    .stamp-graphic {
+      width: 260px;
+      height: 100px;
+      border: 5px dashed var(--emerald-pass);
+      border-radius: 12px;
+      color: var(--emerald-pass);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      text-transform: uppercase;
+      font-family: var(--font-tech);
+      font-weight: 900;
+      letter-spacing: 2px;
+      box-shadow: 0 0 30px rgba(16, 185, 129, 0.4), inset 0 0 15px rgba(16, 185, 129, 0.2);
+      transform: scale(2.8) rotate(-22deg);
+      opacity: 0;
+      background: rgba(16, 185, 129, 0.05);
+    }
+
+    .stamp-graphic.slammed {
+      animation: stampSlam 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    @keyframes stampSlam {
+      0% {
+        transform: scale(2.8) rotate(-22deg);
+        opacity: 0;
+      }
+      60% {
+        transform: scale(0.92) rotate(-7deg);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1) rotate(-8deg);
+        opacity: 1;
+      }
+    }
+
+    .stamp-subtext {
+      font-size: 0.75rem;
+      letter-spacing: 3px;
+    }
+
+    .stamp-maintext {
+      font-size: 1.8rem;
+      line-height: 1.1;
+    }
+
+    .stamp-dialog-card {
+      background: var(--bg-card);
+      border: 1px solid var(--emerald-pass);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+      text-align: center;
+    }
+
+    .stamp-dialog-card h3 {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .stamp-dialog-card p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    /* ==========================================================================
+       8. 警報與差異小知識彈窗 (Error Alert & Knowledge Modal)
+       ========================================================================== */
+    .knowledge-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 15, 29, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .knowledge-modal.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-box {
+      background: #111a2e;
+      border: 1px solid rgba(244, 63, 94, 0.4);
+      border-radius: 22px;
+      width: 100%;
+      max-width: 680px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 28px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(244, 63, 94, 0.2);
+      animation: modalSlide 0.35s ease forwards;
+    }
+
+    @keyframes modalSlide {
+      from { transform: translateY(20px) scale(0.96); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+    }
+
+    .modal-alert-icon {
+      width: 44px;
+      height: 44px;
+      background: rgba(244, 63, 94, 0.15);
+      border: 1px solid var(--rose-danger);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: var(--rose-danger);
+      flex-shrink: 0;
+    }
+
+    .modal-title-block h3 {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .modal-title-block p {
+      font-family: var(--font-tech);
+      font-size: 0.8rem;
+      color: var(--rose-danger);
+      letter-spacing: 1px;
+    }
+
+    .diff-knowledge-container {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .diff-item {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .diff-item.is-target {
+      border-color: rgba(56, 189, 248, 0.4);
+      background: rgba(2, 132, 199, 0.1);
+    }
+
+    .diff-flag-thumb {
+      width: 60px;
+      height: 40px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .diff-details h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .diff-details p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .target-tag {
+      font-size: 0.7rem;
+      background: var(--cyan-glow);
+      color: #ffffff;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-family: var(--font-tech);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .btn-retry {
+      background: linear-gradient(135deg, #e11d48, #f43f5e);
+      color: #ffffff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.95rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition-smooth);
+      box-shadow: 0 4px 15px rgba(244, 63, 94, 0.4);
+    }
+
+    .btn-retry:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(244, 63, 94, 0.6);
+    }
+
+    /* ==========================================================================
+       9. 結算畫面 (Mission Debriefing & Certificate)
+       ========================================================================== */
+    .finish-content {
+      text-align: center;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .certificate-card {
+      background: linear-gradient(145deg, rgba(17, 24, 39, 0.95), rgba(15, 23, 42, 0.95));
+      border: 2px solid rgba(56, 189, 248, 0.4);
+      border-radius: 20px;
+      padding: 32px 24px;
+      margin-bottom: 28px;
+      position: relative;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    .certificate-card::before {
+      content: '★ BORDER INSPECTION SERVICE ★';
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--font-tech);
+      font-size: 0.75rem;
+      letter-spacing: 3px;
+      color: var(--cyan-agent);
+    }
+
+    .cert-icon {
+      font-size: 3.5rem;
+      margin-top: 12px;
+      margin-bottom: 12px;
+      display: inline-block;
+      animation: badgeBounce 1.5s infinite alternate ease-in-out;
+    }
+
+    @keyframes badgeBounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-8px); }
+    }
+
+    .cert-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 900;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .cert-subtitle {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 600px) {
+      .stats-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .stat-box {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    .stat-val {
+      font-family: var(--font-tech);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--cyan-agent);
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+
+    /* 三關國旗重點速記卡 (Junior High Geography Highlights) */
+    .summary-accordion {
+      text-align: left;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 28px;
+    }
+
+    .summary-title {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .summary-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .summary-item {
+      padding: 12px 14px;
+      background: rgba(30, 41, 59, 0.6);
+      border-left: 3px solid var(--cyan-agent);
+      border-radius: 0 10px 10px 0;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .summary-item strong {
+      color: var(--cyan-agent);
+    }
+
+    /* ==========================================================================
+       10. 頁尾與輔助
+       ========================================================================== */
+    .agent-footer {
+      margin-top: 32px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      font-family: var(--font-tech);
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       海關特工頂部導航列 (Agent HUD Header)
+       ========================================================================== -->
+  <header class="agent-header">
+    <div class="brand-block">
+      <div class="brand-logo" aria-hidden="true">🌐</div>
+      <div class="brand-text">
+        <h1>國旗鑑別闖關大作戰</h1>
+        <div class="sub-label">INTER-FLAG BORDER AGENCY // 海關安檢特勤隊</div>
+      </div>
+    </div>
+
+    <div class="hud-controls">
+      <div class="agent-badge-pill" title="目前特工狀態">
+        <span class="pulse-dot"></span>
+        <span id="agentIdDisplay">AGENT-7788</span>
+      </div>
+      <button class="btn-icon" id="btnSoundToggle" title="切換音效開關" aria-label="切換音效">
+        <span id="soundIcon">🔊</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       遊戲主體區域 (Game Container)
+       ========================================================================== -->
+  <main class="game-container">
+    
+    <!-- 關卡進度指示器 (Level Progress Stepper) -->
+    <nav class="level-stepper" aria-label="關卡進度">
+      <div class="step-progress-fill" id="stepProgressFill"></div>
+      
+      <div class="step-node" id="stepNode1">
+        <div class="step-circle">01</div>
+        <span class="step-label">初階：微色差</span>
+      </div>
+      
+      <div class="step-node" id="stepNode2">
+        <div class="step-circle">02</div>
+        <span class="step-label">中階：盾徽謎</span>
+      </div>
+      
+      <div class="step-node" id="stepNode3">
+        <div class="step-circle">03</div>
+        <span class="step-label">魔王：星芒號</span>
+      </div>
+    </nav>
+
+    <!-- ----------------------------------------------------------------------
+         畫面 1：歡迎簡報 (Welcome Screen)
+         ---------------------------------------------------------------------- -->
+    <section class="view-card active" id="viewWelcome">
+      <div class="welcome-content">
+        <div class="dossier-tag">⚡ 機密任務：國中地理特考檔案</div>
+        <h2 class="welcome-title">海關安檢 · 特工鑑旗密令</h2>
+        <p class="welcome-desc">
+          報告特工！全球入境關口出現多起「雙胞胎國旗」闖關事件。請運用你的極限觀察力，破解條紋微差、皇家盾徽與星芒暗號，為世界海關守護正確國籍！
+        </p>
+
+        <div class="feature-grid">
+          <div class="feature-item">
+            <div class="feature-icon">🔍</div>
+            <div class="feature-text">
+              <h4>初階組：波長藍調</h4>
+              <p>乍得 vs. 羅馬尼亞 vs. 幾內亞，挑戰光譜微距色差！</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">🛡️</div>
+            <div class="feature-text">
+              <h4>中階組：斯拉夫盾徽</h4>
+              <p>斯洛伐克 vs. 斯洛維尼亞 vs. 俄羅斯，雙十字與三神山！</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">✨</div>
+            <div class="feature-text">
+              <h4>魔王組：南十字星芒</h4>
+              <p>紐西蘭 vs. 澳洲 vs. 英國，數星星與看星角的終極對決！</p>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn-action" id="btnStartGame">
+          <span>接受特工密令，出任務！</span>
+          <span aria-hidden="true">🚀</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ----------------------------------------------------------------------
+         畫面 2：關卡查驗進行畫面 (Level Playing Screen)
+         ---------------------------------------------------------------------- -->
+    <section class="view-card" id="viewLevel">
+      <div class="mission-header">
+        <div class="mission-meta">
+          <div class="mission-badge badge-easy" id="levelBadge">第 1 關 · 初階組</div>
+          <h2 class="mission-target-title">
+            目標通關國：<span class="target-highlight" id="targetCountryText">乍得 (Chad) 🇹🇩</span>
+          </h2>
+          <p class="mission-instruction" id="missionInstructionText">
+            海關核驗任務：請在下方 3 面受檢旗幟中，指認出真正的目標國旗！
+          </p>
+        </div>
+
+        <div class="mission-actions-bar">
+          <button class="btn-hint" id="btnToggleHint" aria-expanded="false">
+            <span>💡</span>
+            <span>特工提示</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 摺疊特工查驗提示便簽 -->
+      <div class="hint-drawer" id="hintDrawer">
+        <div class="hint-header">
+          <span>📋</span>
+          <span>海關安檢解密便簽：</span>
+        </div>
+        <p class="hint-text" id="hintContentText">
+          提示文字載入中...
+        </p>
+      </div>
+
+      <!-- 3選1 國旗查驗選項卡 -->
+      <div class="flags-grid" id="flagsGrid" role="group" aria-label="待檢國旗選項">
+        <!-- 由 JavaScript 動態生成 3 個選項卡 -->
+      </div>
+    </section>
+
+    <!-- ----------------------------------------------------------------------
+         畫面 3：通關結算畫面 (Mission Debriefing Screen)
+         ---------------------------------------------------------------------- -->
+    <section class="view-card" id="viewFinish">
+      <div class="finish-content">
+        <div class="certificate-card">
+          <div class="cert-icon" id="finishIcon">🎖️</div>
+          <h2 class="cert-title" id="finishTitle">全數查驗合格！</h2>
+          <p class="cert-subtitle" id="finishSubtitle">
+            榮獲「海關特級鑑旗官」榮譽勛章，精準辨析國旗細節！
+          </p>
+
+          <div class="stats-row">
+            <div class="stat-box">
+              <div class="stat-val" id="statAccuracy">100%</div>
+              <div class="stat-label">首發命中率</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-val" id="statErrors">0 次</div>
+              <div class="stat-label">警報失誤次數</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-val" id="statTime">00:24</div>
+              <div class="stat-label">任務總耗時</div>
+            </div>
+          </div>
+
+          <!-- 國中地理國旗易混淆考點總複習 -->
+          <div class="summary-accordion">
+            <div class="summary-title">
+              <span>📚</span>
+              <span>鑑旗特工筆記 · 三大考點通關秘笈</span>
+            </div>
+            <ul class="summary-list">
+              <li class="summary-item">
+                <strong>第 1 關（乍得 vs 羅馬尼亞）：</strong>
+                兩者皆為「藍、黃、紅」垂直三色。乍得位處非洲內陸，國旗的藍色為深沉的<strong>「靛青藍 (Indigo Blue)」</strong>；羅馬尼亞則為明亮的<strong>「鈷藍色 (Cobalt Blue)」</strong>。幾內亞為紅黃綠，極好排除。
+              </li>
+              <li class="summary-item">
+                <strong>第 2 關（斯洛伐克 vs 斯洛維尼亞 vs 俄羅斯）：</strong>
+                三者皆為「白、藍、紅」泛斯拉夫橫條紋。<strong>俄羅斯無國徽</strong>；<strong>斯洛伐克</strong>國徽為三座藍山上的<strong>「雙十字架（洛林十字）」</strong>；<strong>斯洛維尼亞</strong>國徽為<strong>「特里格拉夫白峰＋3顆六角金星」</strong>。
+              </li>
+              <li class="summary-item">
+                <strong>第 3 關（紐西蘭 vs 澳洲 vs 英國）：</strong>
+                英國只有米字旗。<strong>紐西蘭</strong>為<strong>「4顆紅白邊五角星」</strong>（代表南十字座）；<strong>澳洲</strong>則有<strong>「5顆白星」</strong>（4顆七角+1顆五角），且左下角有一顆醒目的<strong>「七角聯邦大白星」</strong>。
+              </li>
+            </ul>
+          </div>
+
+          <button class="btn-action" id="btnRestartGame">
+            <span>再次出勤查驗</span>
+            <span aria-hidden="true">🔄</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================================================
+       過關蓋章動畫覆蓋層 (Approved Stamp Modal)
+       ========================================================================== -->
+  <div class="clearance-stamp-overlay" id="stampOverlay" aria-modal="true" role="dialog">
+    <div class="stamp-container">
+      <div class="stamp-graphic" id="stampGraphic">
+        <span class="stamp-subtext">CUSTOMS PASSED</span>
+        <span class="stamp-maintext">通關核准</span>
+      </div>
+
+      <div class="stamp-dialog-card">
+        <h3 id="stampDialogTitle">查驗身分無誤！</h3>
+        <p id="stampDialogText">恭喜特工精準辨識！即刻蓋印放行。</p>
+        <button class="btn-action" id="btnNextLevel" style="padding: 12px 28px; font-size: 1rem;">
+          <span>前往下一關</span>
+          <span aria-hidden="true">➔</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       答錯警報與差異小知識彈窗 (Error Alert & Knowledge Modal)
+       ========================================================================== -->
+  <div class="knowledge-modal" id="knowledgeModal" aria-modal="true" role="dialog">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-alert-icon">⚠️</div>
+        <div class="modal-title-block">
+          <h3>海關查驗異常！身分不符警報</h3>
+          <p>SECURITY ALERT // DETECTED FLAG MISMATCH</p>
+        </div>
+      </div>
+
+      <div class="diff-knowledge-container" id="diffKnowledgeList">
+        <!-- 由 JavaScript 填入三面國旗詳細差異 -->
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-retry" id="btnCloseKnowledge">
+          <span>重新審驗旗幟</span>
+          <span aria-hidden="true">🔄</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 頁尾宣告 -->
+  <footer class="agent-footer">
+    SECURE TERMINAL ID: AGY-FLAG-CLEARANCE-V1 // 國際海關安檢特勤隊 鑑旗實戰專用
+  </footer>
+
+  <!-- ==========================================================================
+       JavaScript 核心遊戲邏輯 (Vanilla JS & Web Audio API)
+       ========================================================================== -->
+  <script>
+    /**
+     * 國旗鑑別闖關大作戰 - 核心題庫定義
+     * 嚴格指定的三大關卡：
+     * 1. 初階：乍得 (Chad) vs 羅馬尼亞 vs 幾內亞
+     * 2. 中階：斯洛伐克 (Slovakia) vs 斯洛維尼亞 vs 俄羅斯
+     * 3. 魔王：紐西蘭 (New Zealand) vs 澳洲 vs 英國
+     */
+    const LEVELS_DATA = [
+      {
+        level: 1,
+        title: "初階組",
+        badgeClass: "badge-easy",
+        targetCountry: "乍得 (Chad) 🇹🇩",
+        targetKey: "chad",
+        hint: "藍黃紅三色縱紋！仔細看左側的藍色深度——乍得的藍色為深沉的「深靛藍 (Indigo Blue)」，比羅馬尼亞的明亮鈷藍略深；幾內亞則是紅黃綠縱條紋。",
+        options: [
+          {
+            key: "chad",
+            name: "乍得 (Chad)",
+            code: "td",
+            flagUrl: "https://flagcdn.com/w640/td.png",
+            svgUrl: "https://flagcdn.com/td.svg",
+            isCorrect: true,
+            diffTitle: "乍得 🇹🇩（目標國）",
+            diffDesc: "縱向藍、黃、紅三色。左側為較暗的「深靛藍色 (Indigo)」，是非洲內陸國家，因早期保留了法國海軍藍的深色調。"
+          },
+          {
+            key: "romania",
+            name: "羅馬尼亞 (Romania)",
+            code: "ro",
+            flagUrl: "https://flagcdn.com/w640/ro.png",
+            svgUrl: "https://flagcdn.com/ro.svg",
+            isCorrect: false,
+            diffTitle: "羅馬尼亞 🇷🇴（混淆項）",
+            diffDesc: "縱向藍、黃、紅三色。藍色為鮮亮的「鈷藍色 (Cobalt Blue)」，比乍得略淺。兩國旗幟曾引起國際外交專利爭議！"
+          },
+          {
+            key: "guinea",
+            name: "幾內亞 (Guinea)",
+            code: "gn",
+            flagUrl: "https://flagcdn.com/w640/gn.png",
+            svgUrl: "https://flagcdn.com/gn.svg",
+            isCorrect: false,
+            diffTitle: "幾內亞 🇬🇳（干擾項）",
+            diffDesc: "縱向紅、黃、綠三色（泛非色彩）。最左邊是紅色而非藍色，排列與顏色皆不同。"
+          }
+        ]
+      },
+      {
+        level: 2,
+        title: "中階組",
+        badgeClass: "badge-medium",
+        targetCountry: "斯洛伐克 (Slovakia) 🇸🇰",
+        targetKey: "slovakia",
+        hint: "三國都是泛斯拉夫白藍紅橫條紋！關鍵在國徽：俄羅斯無國徽；斯洛伐克國徽在靠左側，圖案是「三座藍山頂著雙十字架（洛林十字）」；斯洛維尼亞則是特里格拉夫白峰與三顆六角金星。",
+        options: [
+          {
+            key: "slovakia",
+            name: "斯洛伐克 (Slovakia)",
+            code: "sk",
+            flagUrl: "https://flagcdn.com/w640/sk.png",
+            svgUrl: "https://flagcdn.com/sk.svg",
+            isCorrect: true,
+            diffTitle: "斯洛伐克 🇸🇰（目標國）",
+            diffDesc: "白、藍、紅橫向三色。靠左側有紅底盾徽，內部有「三座深藍色山丘（象徵塔特拉山等名山）與銀白雙十字架（洛林十字）」。"
+          },
+          {
+            key: "slovenia",
+            name: "斯洛維尼亞 (Slovenia)",
+            code: "si",
+            flagUrl: "https://flagcdn.com/w640/si.png",
+            svgUrl: "https://flagcdn.com/si.svg",
+            isCorrect: false,
+            diffTitle: "斯洛維尼亞 🇸🇮（混淆項）",
+            diffDesc: "白、藍、紅橫向三色。盾徽在左上角白藍交界處，圖案為「三座白雪峰（特里格拉夫峰）、藍色波紋海浪，以及上方三顆金色六角星」。"
+          },
+          {
+            key: "russia",
+            name: "俄羅斯 (Russia)",
+            code: "ru",
+            flagUrl: "https://flagcdn.com/w640/ru.png",
+            svgUrl: "https://flagcdn.com/ru.svg",
+            isCorrect: false,
+            diffTitle: "俄羅斯 🇷🇺（干擾項）",
+            diffDesc: "純粹的白、藍、紅橫向三色旗，旗面上「完全沒有任何國徽或標誌」。"
+          }
+        ]
+      },
+      {
+        level: 3,
+        title: "魔王組",
+        badgeClass: "badge-boss",
+        targetCountry: "紐西蘭 (New Zealand) 🇳🇿",
+        targetKey: "newzealand",
+        hint: "英國藍船旗系列！英國本土只有米字旗。紐西蘭右側是「4顆紅色白邊的五角星」；澳洲則是「5顆純白星（4顆七角+1顆五角）」加上左下方巨大的「七角聯邦之星」！",
+        options: [
+          {
+            key: "newzealand",
+            name: "紐西蘭 (New Zealand)",
+            code: "nz",
+            flagUrl: "https://flagcdn.com/w640/nz.png",
+            svgUrl: "https://flagcdn.com/nz.svg",
+            isCorrect: true,
+            diffTitle: "紐西蘭 🇳🇿（目標國）",
+            diffDesc: "深藍底＋左上角英國米字旗。右方有「4顆紅心、白邊框的五角星」，排列成南十字座。"
+          },
+          {
+            key: "australia",
+            name: "澳洲 (Australia)",
+            code: "au",
+            flagUrl: "https://flagcdn.com/w640/au.png",
+            svgUrl: "https://flagcdn.com/au.svg",
+            isCorrect: false,
+            diffTitle: "澳洲 🇦🇺（混淆項）",
+            diffDesc: "深藍底＋左上角米字旗。右方南十字座為「5顆純白星」（4顆七角星、1顆小五角星），左下方還有一顆巨大的「七角聯邦大白星 (Commonwealth Star)」。"
+          },
+          {
+            key: "uk",
+            name: "英國 (United Kingdom)",
+            code: "gb",
+            flagUrl: "https://flagcdn.com/w640/gb.png",
+            svgUrl: "https://flagcdn.com/gb.svg",
+            isCorrect: false,
+            diffTitle: "英國 🇬🇧（母旗干擾項）",
+            diffDesc: "聯合傑克（Union Jack）米字旗本身，沒有深藍底延伸，也沒有任何南十字星芒。"
+          }
+        ]
+      }
+    ];
+
+    /**
+     * ==========================================================================
+     * Web Audio API 音效引擎 (Zero External Assets, 100% Native Synthesis)
+     * ==========================================================================
+     */
+    class SoundManager {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+
+      initContext() {
+        if (!this.ctx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) {
+            this.ctx = new AudioContextClass();
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      toggleSound() {
+        this.enabled = !this.enabled;
+        return this.enabled;
+      }
+
+      /**
+       * 答對清脆過關音效：上升四音水晶和弦 (C5 -> E5 -> G5 -> C6)
+       */
+      playSuccessChime() {
+        if (!this.enabled) return;
+        this.initContext();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const freqs = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+
+        freqs.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+
+          gain.gain.setValueAtTime(0, now + idx * 0.08);
+          gain.gain.linearRampToValueAtTime(0.25, now + idx * 0.08 + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.5);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(now + idx * 0.08);
+          osc.stop(now + idx * 0.08 + 0.55);
+        });
+      }
+
+      /**
+       * 蓋章撞擊音效：模擬橡膠鋼印重擊桌面的咚聲 (Lowpass Filter Drop)
+       */
+      playStampThud() {
+        if (!this.enabled) return;
+        this.initContext();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(140, now);
+        osc.frequency.exponentialRampToValueAtTime(32, now + 0.18);
+
+        gain.gain.setValueAtTime(0.4, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.25);
+      }
+
+      /**
+       * 答錯警報音效：低沈鋸齒波雙頻警告蜂鳴
+       */
+      playErrorBuzzer() {
+        if (!this.enabled) return;
+        this.initContext();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const osc1 = this.ctx.createOscillator();
+        const osc2 = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc1.type = 'sawtooth';
+        osc2.type = 'square';
+
+        osc1.frequency.setValueAtTime(160, now);
+        osc1.frequency.setValueAtTime(130, now + 0.14);
+
+        osc2.frequency.setValueAtTime(220, now);
+        osc2.frequency.setValueAtTime(175, now + 0.14);
+
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.linearRampToValueAtTime(0.25, now + 0.1);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc1.start(now);
+        osc2.start(now);
+        osc1.stop(now + 0.36);
+        osc2.stop(now + 0.36);
+      }
+
+      /**
+       * 點擊微反饋音效
+       */
+      playTick() {
+        if (!this.enabled) return;
+        this.initContext();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, now);
+        gain.gain.setValueAtTime(0.08, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.06);
+      }
+    }
+
+    /**
+     * ==========================================================================
+     * 遊戲狀態管理 (Game Controller)
+     * ==========================================================================
+     */
+    class FlagGame {
+      constructor() {
+        this.sound = new SoundManager();
+        this.currentLevelIndex = 0;
+        this.totalErrors = 0;
+        this.firstTrySuccessCount = 0;
+        this.levelHadError = false;
+        
+        this.timerInterval = null;
+        this.secondsElapsed = 0;
+
+        // 快取 DOM 元素
+        this.dom = {
+          viewWelcome: document.getElementById('viewWelcome'),
+          viewLevel: document.getElementById('viewLevel'),
+          viewFinish: document.getElementById('viewFinish'),
+
+          btnStartGame: document.getElementById('btnStartGame'),
+          btnRestartGame: document.getElementById('btnRestartGame'),
+          btnSoundToggle: document.getElementById('btnSoundToggle'),
+          soundIcon: document.getElementById('soundIcon'),
+          btnToggleHint: document.getElementById('btnToggleHint'),
+          hintDrawer: document.getElementById('hintDrawer'),
+          hintContentText: document.getElementById('hintContentText'),
+
+          levelBadge: document.getElementById('levelBadge'),
+          targetCountryText: document.getElementById('targetCountryText'),
+          missionInstructionText: document.getElementById('missionInstructionText'),
+          flagsGrid: document.getElementById('flagsGrid'),
+
+          stepNodes: [
+            document.getElementById('stepNode1'),
+            document.getElementById('stepNode2'),
+            document.getElementById('stepNode3')
+          ],
+          stepProgressFill: document.getElementById('stepProgressFill'),
+
+          stampOverlay: document.getElementById('stampOverlay'),
+          stampGraphic: document.getElementById('stampGraphic'),
+          stampDialogTitle: document.getElementById('stampDialogTitle'),
+          stampDialogText: document.getElementById('stampDialogText'),
+          btnNextLevel: document.getElementById('btnNextLevel'),
+
+          knowledgeModal: document.getElementById('knowledgeModal'),
+          diffKnowledgeList: document.getElementById('diffKnowledgeList'),
+          btnCloseKnowledge: document.getElementById('btnCloseKnowledge'),
+
+          statAccuracy: document.getElementById('statAccuracy'),
+          statErrors: document.getElementById('statErrors'),
+          statTime: document.getElementById('statTime'),
+          finishTitle: document.getElementById('finishTitle'),
+          finishSubtitle: document.getElementById('finishSubtitle'),
+          finishIcon: document.getElementById('finishIcon')
+        };
+
+        this.bindEvents();
+      }
+
+      bindEvents() {
+        // 開始遊戲按鈕
+        this.dom.btnStartGame.addEventListener('click', () => {
+          this.sound.playTick();
+          this.startGame();
+        });
+
+        // 重新開始遊戲按鈕
+        this.dom.btnRestartGame.addEventListener('click', () => {
+          this.sound.playTick();
+          this.restartGame();
+        });
+
+        // 音效開關切換
+        this.dom.btnSoundToggle.addEventListener('click', () => {
+          const isEnabled = this.sound.toggleSound();
+          this.dom.soundIcon.textContent = isEnabled ? '🔊' : '🔇';
+          if (isEnabled) this.sound.playTick();
+        });
+
+        // 特工提示抽屜切換
+        this.dom.btnToggleHint.addEventListener('click', () => {
+          this.sound.playTick();
+          const isOpen = this.dom.hintDrawer.classList.toggle('open');
+          this.dom.btnToggleHint.setAttribute('aria-expanded', isOpen);
+        });
+
+        // 關閉警報差異視窗，讓玩家重試
+        this.dom.btnCloseKnowledge.addEventListener('click', () => {
+          this.sound.playTick();
+          this.dom.knowledgeModal.classList.remove('active');
+        });
+
+        // 下一關按鈕
+        this.dom.btnNextLevel.addEventListener('click', () => {
+          this.sound.playTick();
+          this.nextLevel();
+        });
+
+        // 點擊遮罩外圍關閉小知識彈窗
+        this.dom.knowledgeModal.addEventListener('click', (e) => {
+          if (e.target === this.dom.knowledgeModal) {
+            this.dom.knowledgeModal.classList.remove('active');
+          }
+        });
+      }
+
+      startTimer() {
+        this.secondsElapsed = 0;
+        clearInterval(this.timerInterval);
+        this.timerInterval = setInterval(() => {
+          this.secondsElapsed++;
+        }, 1000);
+      }
+
+      stopTimer() {
+        clearInterval(this.timerInterval);
+      }
+
+      formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      }
+
+      switchView(viewName) {
+        this.dom.viewWelcome.classList.remove('active');
+        this.dom.viewLevel.classList.remove('active');
+        this.dom.viewFinish.classList.remove('active');
+
+        if (viewName === 'welcome') {
+          this.dom.viewWelcome.classList.add('active');
+        } else if (viewName === 'level') {
+          this.dom.viewLevel.classList.add('active');
+        } else if (viewName === 'finish') {
+          this.dom.viewFinish.classList.add('active');
+        }
+      }
+
+      updateStepper(levelIdx) {
+        // 更新進度條百分比 (0%, 50%, 100%)
+        const percentages = [0, 50, 100];
+        this.dom.stepProgressFill.style.width = `${percentages[levelIdx]}%`;
+
+        this.dom.stepNodes.forEach((node, idx) => {
+          node.classList.remove('active', 'completed');
+          if (idx < levelIdx) {
+            node.classList.add('completed');
+          } else if (idx === levelIdx) {
+            node.classList.add('active');
+          }
+        });
+      }
+
+      startGame() {
+        this.currentLevelIndex = 0;
+        this.totalErrors = 0;
+        this.firstTrySuccessCount = 0;
+        this.startTimer();
+        this.loadLevel(this.currentLevelIndex);
+        this.switchView('level');
+      }
+
+      restartGame() {
+        this.startGame();
+      }
+
+      loadLevel(index) {
+        const data = LEVELS_DATA[index];
+        this.levelHadError = false;
+        this.updateStepper(index);
+
+        // 關閉之前的提示抽屜
+        this.dom.hintDrawer.classList.remove('open');
+        this.dom.btnToggleHint.setAttribute('aria-expanded', 'false');
+
+        // 設定關卡標頭
+        this.dom.levelBadge.textContent = `第 ${data.level} 關 · ${data.title}`;
+        this.dom.levelBadge.className = `mission-badge ${data.badgeClass}`;
+        this.dom.targetCountryText.textContent = data.targetCountry;
+        this.dom.hintContentText.textContent = data.hint;
+
+        // 打亂選項順序以增加鑑別趣味性，但保持資料完整
+        const shuffledOptions = [...data.options].sort(() => Math.random() - 0.5);
+
+        // 生成國旗選項卡片
+        this.dom.flagsGrid.innerHTML = '';
+        shuffledOptions.forEach((opt, optIdx) => {
+          const card = document.createElement('div');
+          card.className = 'flag-card';
+          card.tabIndex = 0;
+          card.setAttribute('role', 'button');
+          card.setAttribute('aria-label', `檢驗選項 ${optIdx + 1}: ${opt.name}`);
+
+          card.innerHTML = `
+            <span class="flag-badge-num">SAMPLE #${String(optIdx + 1).padStart(2, '0')}</span>
+            <div class="flag-img-container">
+              <img class="flag-img" src="${opt.flagUrl}" alt="${opt.name}國旗" loading="eager" onerror="this.src='${opt.svgUrl}'">
+            </div>
+            <div class="flag-info">
+              <h3 class="flag-name">${opt.name}</h3>
+              <p class="flag-subtext">ISO: ${opt.code.toUpperCase()} // 待核驗</p>
+              <div class="btn-verify-chip">
+                <span>🔍</span>
+                <span>確認查驗此旗</span>
+              </div>
+            </div>
+          `;
+
+          // 綁定點選核驗
+          const handleSelect = () => {
+            this.handleChoice(opt, card, data);
+          };
+
+          card.addEventListener('click', handleSelect);
+          card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleSelect();
+            }
+          });
+
+          this.dom.flagsGrid.appendChild(card);
+        });
+      }
+
+      handleChoice(selectedOpt, cardElement, levelData) {
+        if (selectedOpt.isCorrect) {
+          // ==================== 答對機制 ====================
+          if (!this.levelHadError) {
+            this.firstTrySuccessCount++;
+          }
+
+          // 播放成功鈴聲與鋼印撞擊聲
+          this.sound.playSuccessChime();
+          setTimeout(() => {
+            this.sound.playStampThud();
+          }, 200);
+
+          // 顯示通關蓋章動畫覆蓋層
+          this.showApprovedStamp(levelData, selectedOpt);
+
+        } else {
+          // ==================== 答錯機制 ====================
+          this.totalErrors++;
+          this.levelHadError = true;
+
+          // 播放警報聲
+          this.sound.playErrorBuzzer();
+
+          // 觸發卡片震動特效
+          cardElement.classList.add('shake-error');
+          setTimeout(() => {
+            cardElement.classList.remove('shake-error');
+          }, 600);
+
+          // 延遲 300ms 彈出「該組國旗差異小知識」
+          setTimeout(() => {
+            this.showKnowledgeModal(levelData, selectedOpt);
+          }, 350);
+        }
+      }
+
+      showApprovedStamp(levelData, correctOpt) {
+        this.dom.stampGraphic.classList.remove('slammed');
+        this.dom.stampOverlay.classList.add('active');
+
+        // 觸發蓋印動畫
+        requestAnimationFrame(() => {
+          this.dom.stampGraphic.classList.add('slammed');
+        });
+
+        this.dom.stampDialogTitle = document.getElementById('stampDialogTitle');
+        this.dom.stampDialogTitle.textContent = `查驗成功！正確識別 ${correctOpt.name}`;
+        this.dom.stampDialogText.textContent = `身分完全吻合！特工精確辨識了 ${levelData.title} 的細部特徵。即刻蓋印放行！`;
+
+        // 如果是最後一關，按鈕文字變更為「查看結算報告」
+        if (this.currentLevelIndex === LEVELS_DATA.length - 1) {
+          this.dom.btnNextLevel.innerHTML = `
+            <span>完成所有任務，查看結算</span>
+            <span aria-hidden="true">🏆</span>
+          `;
+        } else {
+          this.dom.btnNextLevel.innerHTML = `
+            <span>前往第 ${levelData.level + 1} 關</span>
+            <span aria-hidden="true">➔</span>
+          `;
+        }
+      }
+
+      showKnowledgeModal(levelData, wrongOpt) {
+        this.dom.diffKnowledgeList.innerHTML = '';
+
+        // 列出該關卡全部 3 面國旗的辨識訣竅
+        levelData.options.forEach(opt => {
+          const item = document.createElement('div');
+          item.className = `diff-item ${opt.isCorrect ? 'is-target' : ''}`;
+
+          item.innerHTML = `
+            <img class="diff-flag-thumb" src="${opt.flagUrl}" alt="${opt.name}" onerror="this.src='${opt.svgUrl}'">
+            <div class="diff-details">
+              <h4>
+                <span>${opt.diffTitle}</span>
+                ${opt.isCorrect ? '<span class="target-tag">正解目標</span>' : ''}
+                ${opt.key === wrongOpt.key ? '<span style="font-size: 0.7rem; color: var(--rose-danger); font-family: var(--font-tech);">你選了這個</span>' : ''}
+              </h4>
+              <p>${opt.diffDesc}</p>
+            </div>
+          `;
+
+          this.dom.diffKnowledgeList.appendChild(item);
+        });
+
+        this.dom.knowledgeModal.classList.add('active');
+      }
+
+      nextLevel() {
+        this.dom.stampOverlay.classList.remove('active');
+        this.currentLevelIndex++;
+
+        if (this.currentLevelIndex < LEVELS_DATA.length) {
+          this.loadLevel(this.currentLevelIndex);
+        } else {
+          this.finishGame();
+        }
+      }
+
+      finishGame() {
+        this.stopTimer();
+        this.sound.playSuccessChime();
+
+        // 標記所有節點完成
+        this.updateStepper(LEVELS_DATA.length);
+
+        // 計算統計數值
+        const accuracyRate = Math.round((this.firstTrySuccessCount / LEVELS_DATA.length) * 100);
+        this.dom.statAccuracy.textContent = `${accuracyRate}%`;
+        this.dom.statErrors.textContent = `${this.totalErrors} 次`;
+        this.dom.statTime.textContent = this.formatTime(this.secondsElapsed);
+
+        // 依據表現賦予稱號
+        if (this.totalErrors === 0) {
+          this.dom.finishIcon.textContent = '👑';
+          this.dom.finishTitle.textContent = '神眼特級鑑旗官！S級通關';
+          this.dom.finishSubtitle.textContent = '零失誤完美通關！你對世界國旗的敏銳度已達海關總署最高標準。';
+        } else if (this.totalErrors <= 2) {
+          this.dom.finishIcon.textContent = '🎖️';
+          this.dom.finishTitle.textContent = '資深海關查驗員！A級通關';
+          this.dom.finishSubtitle.textContent = '表現亮眼！成功克服了雙胞胎國旗的偽裝陷阱。';
+        } else {
+          this.dom.finishIcon.textContent = '🔍';
+          this.dom.finishTitle.textContent = '查驗合格特勤員！通關達成';
+          this.dom.finishSubtitle.textContent = '成功完成鑑別挑戰！複習下方的重點筆記，下次一定能零失誤通關！';
+        }
+
+        this.switchView('finish');
+      }
+    }
+
+    // 當 DOM 載入完畢即刻初始化遊戲
+    document.addEventListener('DOMContentLoaded', () => {
+      window.flagGameInstance = new FlagGame();
+    });
+  </script>
+</body>
+</html>
