@@ -1,0 +1,1730 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>國旗鑑別闖關大作戰 · 五大洲海關特工巡迴</title>
+  <meta name="description" content="專為國中地理設計的國旗鑑別互動遊戲，依據五大洲分區隨機出題，3選1純旗幟盲測，強化國際視野與地理觀察力！">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ==========================================================================
+       全域變數與主題設計系統 (Tech Agent Glassmorphism Theme)
+       ========================================================================== */
+    :root {
+      --bg-space: #070b14;
+      --bg-card: rgba(15, 23, 42, 0.88);
+      --bg-card-hover: rgba(30, 41, 59, 0.95);
+      --border-color: rgba(56, 189, 248, 0.25);
+      --border-color-glow: rgba(56, 189, 248, 0.6);
+      
+      --cyan-agent: #38bdf8;
+      --cyan-glow: rgba(56, 189, 248, 0.4);
+      --emerald-pass: #10b981;
+      --rose-danger: #f43f5e;
+      --amber-gold: #fbbf24;
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      
+      --font-display: 'Chakra Petch', 'Noto Sans TC', sans-serif;
+      --font-body: 'Noto Sans TC', sans-serif;
+      
+      --transition-smooth: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: var(--bg-space);
+      background-image: 
+        radial-gradient(circle at 15% 20%, rgba(56, 189, 248, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 85% 80%, rgba(16, 185, 129, 0.08) 0%, transparent 45%),
+        linear-gradient(180deg, rgba(7, 11, 20, 0.9) 0%, rgba(11, 17, 32, 1) 100%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* 頂部全域導航列 */
+    .app-header {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+      z-index: 20;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .brand-logo {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #0284c7, #0ea5e9);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 0 16px var(--cyan-glow);
+    }
+
+    .brand-text h1 {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #ffffff;
+      line-height: 1.2;
+    }
+
+    .brand-text p {
+      font-size: 0.75rem;
+      color: var(--cyan-agent);
+      font-family: var(--font-display);
+      letter-spacing: 1px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-icon-toggle {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition-smooth);
+      font-family: var(--font-display);
+    }
+
+    .btn-icon-toggle:hover {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--cyan-agent);
+      color: #ffffff;
+    }
+
+    /* 主舞台容器 */
+    .main-stage {
+      flex: 1;
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* 視圖卡片切換 */
+    .view-card {
+      display: none;
+      width: 100%;
+      animation: fadeIn 0.35s ease-out forwards;
+    }
+
+    .view-card.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==========================================================================
+       畫面 1：洲別選擇中心 (Continent Selection)
+       ========================================================================== */
+    .selection-hero {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--cyan-agent);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      font-family: var(--font-display);
+    }
+
+    .hero-title {
+      font-size: 2.1rem;
+      font-weight: 900;
+      color: #ffffff;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .hero-desc {
+      color: var(--text-muted);
+      max-width: 680px;
+      margin: 0 auto;
+      font-size: 0.95rem;
+    }
+
+    .continent-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .continent-card {
+      background: var(--bg-card);
+      border: 2px solid var(--border-color);
+      border-radius: 18px;
+      padding: 24px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: var(--transition-smooth);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    .continent-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--cyan-agent);
+      opacity: 0;
+      transition: var(--transition-smooth);
+    }
+
+    .continent-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--cyan-agent);
+      background: var(--bg-card-hover);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 20px var(--cyan-glow);
+    }
+
+    .continent-card:hover::before {
+      opacity: 1;
+    }
+
+    .continent-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .continent-icon {
+      font-size: 2.4rem;
+      line-height: 1;
+    }
+
+    .continent-tag {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--cyan-agent);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.78rem;
+      font-family: var(--font-display);
+      font-weight: 700;
+    }
+
+    .continent-name {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+
+    .continent-subtext {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 20px;
+      flex: 1;
+    }
+
+    .continent-cta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 14px;
+      color: var(--cyan-agent);
+      font-weight: 700;
+      font-size: 0.9rem;
+      font-family: var(--font-display);
+    }
+
+    .continent-cta span.arrow {
+      transition: transform 0.2s ease;
+    }
+
+    .continent-card:hover .continent-cta span.arrow {
+      transform: translateX(6px);
+    }
+
+    /* ==========================================================================
+       畫面 2：答題進行畫面 (Level Play View)
+       ========================================================================== */
+    .play-header {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .play-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .zone-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid var(--cyan-agent);
+      color: #ffffff;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+
+    .progress-track-wrap {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 20%;
+      background: linear-gradient(90deg, var(--cyan-agent), var(--emerald-pass));
+      box-shadow: 0 0 12px var(--cyan-agent);
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+
+    /* 題目告示牌 */
+    .mission-prompt-card {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.9));
+      border: 2px solid var(--cyan-agent);
+      border-radius: 18px;
+      padding: 24px;
+      margin-bottom: 24px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(56, 189, 248, 0.08);
+    }
+
+    .mission-prompt-label {
+      font-size: 0.85rem;
+      color: var(--cyan-agent);
+      font-family: var(--font-display);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .mission-target-country {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #ffffff;
+      margin-bottom: 12px;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-toggle-hint {
+      background: rgba(251, 191, 36, 0.12);
+      border: 1px solid var(--amber-gold);
+      color: var(--amber-gold);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition-smooth);
+    }
+
+    .btn-toggle-hint:hover {
+      background: var(--amber-gold);
+      color: #0b1120;
+    }
+
+    /* 提示抽屜 */
+    .hint-drawer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease, margin-top 0.35s ease;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+      text-align: left;
+    }
+
+    .hint-drawer.open {
+      max-height: 160px;
+      margin-top: 16px;
+      padding: 14px 18px;
+      border: 1px dashed rgba(251, 191, 36, 0.4);
+    }
+
+    .hint-drawer p {
+      font-size: 0.9rem;
+      color: #fef08a;
+      line-height: 1.5;
+    }
+
+    /* 三張國旗選項卡片網格 (純國旗盲測) */
+    .flags-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .flag-card {
+      background: var(--bg-card);
+      border: 2px solid rgba(255, 255, 255, 0.12);
+      border-radius: 18px;
+      padding: 18px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .flag-card:hover {
+      border-color: var(--cyan-agent);
+      background: var(--bg-card-hover);
+      transform: translateY(-8px);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), 0 0 24px var(--cyan-glow);
+    }
+
+    .flag-badge-num {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      color: var(--cyan-agent);
+      border: 1px solid var(--border-color);
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-family: var(--font-display);
+      font-weight: 700;
+      z-index: 5;
+    }
+
+    .flag-img-container {
+      width: 100%;
+      height: 165px;
+      border-radius: 12px;
+      background: #090d16;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.7);
+    }
+
+    .flag-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 6px;
+      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
+      transition: transform 0.35s ease;
+    }
+
+    .flag-card:hover .flag-img {
+      transform: scale(1.05);
+    }
+
+    .btn-verify-chip {
+      width: 100%;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid var(--border-color);
+      color: var(--cyan-agent);
+      padding: 10px 0;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      transition: var(--transition-smooth);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-family: var(--font-display);
+    }
+
+    .flag-card:hover .btn-verify-chip {
+      background: var(--cyan-agent);
+      color: #0b1120;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+    }
+
+    /* 答錯震動動畫 */
+    .shake-error {
+      animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+      border-color: var(--rose-danger) !important;
+      box-shadow: 0 0 25px rgba(244, 63, 94, 0.6) !important;
+    }
+
+    @keyframes shake {
+      10%, 90% { transform: translate3d(-3px, 0, 0); }
+      20%, 80% { transform: translate3d(4px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+      40%, 60% { transform: translate3d(6px, 0, 0); }
+    }
+
+    /* ==========================================================================
+       彈窗：過關鋼印動畫 (Approved Stamp Modal)
+       ========================================================================== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(7, 11, 20, 0.85);
+      backdrop-filter: blur(10px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .stamp-card {
+      background: #0f172a;
+      border: 2px solid var(--emerald-pass);
+      border-radius: 20px;
+      max-width: 500px;
+      width: 100%;
+      padding: 32px 24px;
+      text-align: center;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(16, 185, 129, 0.35);
+      animation: zoomIn 0.3s ease-out;
+    }
+
+    @keyframes zoomIn {
+      from { transform: scale(0.85); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .rubber-stamp {
+      display: inline-block;
+      padding: 10px 24px;
+      text-transform: uppercase;
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--emerald-pass);
+      border: 4px solid var(--emerald-pass);
+      border-radius: 12px;
+      font-family: var(--font-display);
+      transform: rotate(-10deg) scale(2);
+      opacity: 0;
+      margin-bottom: 20px;
+      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .rubber-stamp.slammed {
+      transform: rotate(-8deg) scale(1);
+      opacity: 1;
+    }
+
+    .stamp-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .stamp-fact {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 24px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 12px 16px;
+      border-radius: 10px;
+      border-left: 3px solid var(--emerald-pass);
+      text-align: left;
+    }
+
+    .btn-action {
+      background: linear-gradient(135deg, #0284c7, #0ea5e9);
+      color: #ffffff;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 1.05rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: var(--font-display);
+      transition: var(--transition-smooth);
+      width: 100%;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+    }
+
+    .btn-action:hover {
+      background: linear-gradient(135deg, #0369a1, #0284c7);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(2, 132, 199, 0.6);
+    }
+
+    /* ==========================================================================
+       彈窗：警報對照清單 (Security Alert Modal)
+       ========================================================================== */
+    .alert-card {
+      background: #0f172a;
+      border: 2px solid var(--rose-danger);
+      border-radius: 20px;
+      max-width: 600px;
+      width: 100%;
+      padding: 28px 24px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(244, 63, 94, 0.35);
+      animation: zoomIn 0.3s ease-out;
+    }
+
+    .alert-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+      border-bottom: 1px solid rgba(244, 63, 94, 0.3);
+      padding-bottom: 12px;
+    }
+
+    .alert-header h3 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--rose-danger);
+      font-family: var(--font-display);
+    }
+
+    .alert-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+      max-height: 50vh;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .alert-item {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .alert-item.is-target {
+      border-color: var(--emerald-pass);
+      background: rgba(16, 185, 129, 0.08);
+    }
+
+    .alert-thumb {
+      width: 60px;
+      height: 42px;
+      border-radius: 6px;
+      object-fit: cover;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      flex-shrink: 0;
+    }
+
+    .alert-info h4 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 3px;
+    }
+
+    .alert-info p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* ==========================================================================
+       畫面 3：通關結算畫面 (Finish Screen)
+       ========================================================================== */
+    .finish-card {
+      background: var(--bg-card);
+      border: 2px solid var(--border-color);
+      border-radius: 20px;
+      padding: 36px 28px;
+      text-align: center;
+      max-width: 760px;
+      margin: 0 auto;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+
+    .finish-icon {
+      font-size: 4rem;
+      margin-bottom: 12px;
+      display: inline-block;
+      animation: bounce 1.5s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .finish-title {
+      font-size: 2rem;
+      font-weight: 900;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .finish-subtitle {
+      color: var(--text-muted);
+      font-size: 1rem;
+      margin-bottom: 28px;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 30px;
+    }
+
+    .stat-box {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    .stat-val {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--cyan-agent);
+      font-family: var(--font-display);
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+
+    /* 複習 Accordion */
+    .review-accordion {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 18px 20px;
+      text-align: left;
+      margin-bottom: 32px;
+    }
+
+    .review-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--cyan-agent);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .review-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .review-item {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      padding-left: 14px;
+      position: relative;
+    }
+
+    .review-item::before {
+      content: '•';
+      color: var(--cyan-agent);
+      position: absolute;
+      left: 0;
+      font-weight: bold;
+    }
+
+    .finish-actions {
+      display: flex;
+      gap: 16px;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: var(--font-display);
+      transition: var(--transition-smooth);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.16);
+      border-color: #ffffff;
+    }
+
+    /* RWD 手機版響應式 */
+    @media (max-width: 768px) {
+      .flags-grid {
+        grid-template-columns: 1fr;
+      }
+      .stats-row {
+        grid-template-columns: 1fr;
+      }
+      .finish-actions {
+        flex-direction: column;
+      }
+      .hero-title {
+        font-size: 1.6rem;
+      }
+      .mission-target-country {
+        font-size: 1.7rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 全域頂部導航 -->
+  <header class="app-header">
+    <a href="#" class="brand-wrap" id="btnNavHome" aria-label="回到首頁選擇洲別">
+      <div class="brand-logo">🌐</div>
+      <div class="brand-text">
+        <h1>國旗鑑別闖關大作戰</h1>
+        <p>WORLD CUSTOMS // 5 大洲分區考驗</p>
+      </div>
+    </a>
+    <div class="header-actions">
+      <button class="btn-icon-toggle" id="btnBackToContinents" style="display: none;" title="返回選擇其他洲別">
+        <span>🌐</span>
+        <span>更換洲別</span>
+      </button>
+      <button class="btn-icon-toggle" id="btnSoundToggle" aria-label="切換音效">
+        <span id="soundIcon">🔊</span>
+        <span>音效</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- 主內容舞台 -->
+  <main class="main-stage">
+
+    <!-- ======================================================================
+         畫面 1：五大洲分區選擇畫面 (Continent Select)
+         ====================================================================== -->
+    <section class="view-card active" id="viewContinentSelect">
+      <div class="selection-hero">
+        <div class="hero-badge">⚡ 任務派遣中心 · 世界巡迴安檢</div>
+        <h2 class="hero-title">請選擇本次特工查驗之洲別</h2>
+        <p class="hero-desc">
+          報告特工！全球入境關口已依五大洲完成分區佈署。每一輪將依亂數隨機抽選 5 道國旗盲測考驗，三選一純視覺辨識，挑戰你的世界地理眼力！
+        </p>
+      </div>
+
+      <div class="continent-grid" id="continentGrid">
+        <!-- 由 JavaScript 動態生成各洲卡片 -->
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         畫面 2：答題進行畫面 (Level Play View)
+         ====================================================================== -->
+    <section class="view-card" id="viewLevel">
+      <div class="play-header">
+        <div class="play-meta-row">
+          <div class="zone-badge" id="currentZoneBadge">🌏 亞洲特區 · 任務 01/05</div>
+          <button class="btn-toggle-hint" id="btnToggleHint" aria-expanded="false">
+            <span>💡</span>
+            <span>查看鑑旗情資</span>
+          </button>
+        </div>
+
+        <div class="progress-track-wrap">
+          <div class="progress-bar-fill" id="progressBarFill"></div>
+        </div>
+
+        <div class="hint-drawer" id="hintDrawer">
+          <p id="hintContentText">情資載入中...</p>
+        </div>
+      </div>
+
+      <!-- 目標題目指示看板 -->
+      <div class="mission-prompt-card">
+        <div class="mission-prompt-label">TARGET INSPECTION // 目標查驗國</div>
+        <h2 class="mission-target-country" id="targetCountryText">日本 (Japan) 🇯🇵</h2>
+        <p style="font-size: 0.88rem; color: var(--text-muted);">
+          請仔細比對下方三面國旗樣品，找出屬於該國的正確國旗：
+        </p>
+      </div>
+
+      <!-- 三面國旗盲測選項 -->
+      <div class="flags-grid" id="flagsGrid">
+        <!-- 由 JS 動態生成 3 選 1 純旗幟卡片 -->
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         畫面 3：通關結算畫面 (Finish View)
+         ====================================================================== -->
+    <section class="view-card" id="viewFinish">
+      <div class="finish-card">
+        <div class="finish-icon" id="finishIcon">👑</div>
+        <h2 class="finish-title" id="finishTitle">查驗任務圓滿達成！</h2>
+        <p class="finish-subtitle" id="finishSubtitle">你精準破解了雙胞胎旗幟的偽裝陷阱。</p>
+
+        <div class="stats-row">
+          <div class="stat-box">
+            <div class="stat-val" id="statAccuracy">100%</div>
+            <div class="stat-label">首發命中率</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="statErrors">0 次</div>
+            <div class="stat-label">失誤警報次數</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="statTime">00:45</div>
+            <div class="stat-label">巡迴總耗時</div>
+          </div>
+        </div>
+
+        <!-- 本輪考點速記複習清單 -->
+        <div class="review-accordion">
+          <div class="review-title">
+            <span>📚</span>
+            <span>本次巡迴鑑旗筆記 · 重點速記</span>
+          </div>
+          <ul class="review-list" id="reviewList">
+            <!-- 由 JS 動態列出本輪出現過的國旗知識 -->
+          </ul>
+        </div>
+
+        <div class="finish-actions">
+          <button class="btn-secondary" id="btnRestartZone">
+            <span>🔄 再次挑戰本洲 (換題目)</span>
+          </button>
+          <button class="btn-action" id="btnReturnToContinents">
+            <span>🌐 選擇其他大洲</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================================================
+       彈窗 1：過關蓋印 (Approved Stamp Modal)
+       ========================================================================== -->
+  <div class="modal-overlay" id="stampOverlay" aria-modal="true" role="dialog">
+    <div class="stamp-card">
+      <div class="rubber-stamp" id="rubberStamp">APPROVED</div>
+      <h3 class="stamp-title" id="stampCountryTitle">查驗核准！</h3>
+      <p class="stamp-fact" id="stampCountryFact">國家背景小知識載入中...</p>
+      <button class="btn-action" id="btnNextQuestion">
+        <span>下一題查驗</span>
+        <span aria-hidden="true">➔</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       彈窗 2：警報對照清單 (Security Alert Modal)
+       ========================================================================== -->
+  <div class="modal-overlay" id="alertOverlay" aria-modal="true" role="dialog">
+    <div class="alert-card">
+      <div class="alert-header">
+        <span style="font-size: 1.8rem;">🚨</span>
+        <div>
+          <h3>IDENTIFICATION ERROR // 辨識警報</h3>
+          <p style="font-size: 0.8rem; color: var(--text-muted);">特工注意！請仔細比對這三面國旗的真實國籍與關鍵特徵：</p>
+        </div>
+      </div>
+      <div class="alert-list" id="alertList">
+        <!-- JS 動態生成 3 面國旗對照 -->
+      </div>
+      <button class="btn-action" id="btnCloseAlert" style="background: rgba(244, 63, 94, 0.85);">
+        <span>我記住了，繼續查驗</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       核心 JavaScript 邏輯：Web Audio + 五大洲題庫 + 亂數引擎
+       ========================================================================== -->
+  <script>
+    /**
+     * 1. Web Audio 原生動態合成音效引擎 (零外部檔案依賴)
+     */
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) this.ctx = new AudioContextClass();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      toggle() {
+        this.enabled = !this.enabled;
+        return this.enabled;
+      }
+
+      playSuccess() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const freqs = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        freqs.forEach((f, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(f, now + i * 0.07);
+          gain.gain.setValueAtTime(0, now + i * 0.07);
+          gain.gain.linearRampToValueAtTime(0.2, now + i * 0.07 + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.07 + 0.45);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now + i * 0.07);
+          osc.stop(now + i * 0.07 + 0.5);
+        });
+      }
+
+      playStamp() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(130, now);
+        osc.frequency.exponentialRampToValueAtTime(30, now + 0.2);
+        gain.gain.setValueAtTime(0.4, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.25);
+      }
+
+      playError() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc1 = this.ctx.createOscillator();
+        const osc2 = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc1.type = 'sawtooth';
+        osc2.type = 'square';
+        osc1.frequency.setValueAtTime(150, now);
+        osc2.frequency.setValueAtTime(210, now);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+        osc1.connect(gain);
+        osc2.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc1.start(now);
+        osc2.start(now);
+        osc1.stop(now + 0.38);
+        osc2.stop(now + 0.38);
+      }
+
+      playTick() {
+        if (!this.enabled) return;
+        this.init();
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, now);
+        gain.gain.setValueAtTime(0.05, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.06);
+      }
+    }
+
+    /**
+     * 2. 嚴選五大洲豐富國旗題庫資料庫 (涵蓋國中地理 58 國)
+     */
+    const CONTINENT_DEFINITIONS = [
+      {
+        id: "asia",
+        name: "亞洲特區",
+        enName: "Asia Region",
+        icon: "🌏",
+        tag: "12 國考點",
+        desc: "東亞日韓、東南亞千島之國、南亞孔雀王朝與西亞星月傳奇。"
+      },
+      {
+        id: "europe",
+        name: "歐洲特區",
+        enName: "Europe Region",
+        icon: "🌍",
+        tag: "14 國考點",
+        desc: "三色旗發源地！北歐十字、泛斯拉夫色彩與皇室盾徽經典大對決。"
+      },
+      {
+        id: "americas",
+        name: "美洲特區",
+        enName: "Americas Region",
+        icon: "🌎",
+        tag: "12 國考點",
+        desc: "星條旗系列、楓葉之國、印加五月太陽與南美泛美自由色彩。"
+      },
+      {
+        id: "africa",
+        name: "非洲特區",
+        enName: "Africa Region",
+        icon: "🌍",
+        tag: "12 國考點",
+        desc: "泛非三色（紅黃綠）、微光譜藍調、幾何條紋與獨立精神圖騰。"
+      },
+      {
+        id: "oceania",
+        name: "大洋洲特區",
+        enName: "Oceania Region",
+        icon: "🌏",
+        tag: "8 國考點",
+        desc: "南十字星芒、英國藍船旗系與太平洋蔚藍島嶼的星月對決。"
+      },
+      {
+        id: "global",
+        name: "全球特工大挑戰",
+        enName: "Global All Stars",
+        icon: "🌐",
+        tag: "58 國無差別混抽",
+        desc: "集結五大洲全部國旗的極限盲測！考驗海關特考的真正實力。"
+      }
+    ];
+
+    const FLAG_DATABASE = [
+      // ==================== 亞洲 (Asia) ====================
+      { continent: "asia", code: "jp", name: "日本 (Japan) 🇯🇵", hint: "純白底加上正中央正紅圓日，象徵旭日初昇。", fact: "白底紅日（日之丸），象徵聖德太子所言『日出之國』與光明純潔。" },
+      { continent: "asia", code: "kr", name: "韓國 (South Korea) 🇰🇷", hint: "白底中心為紅白藍太極圖，四角為黑色乾坤坎離四卦。", fact: "太極旗象徵宇宙萬物的和諧演化，白底代表和平與純潔純樸民族性。" },
+      { continent: "asia", code: "tw", name: "台灣 (Taiwan) 🇹🇼", hint: "左上角青天白日，紅色滿地代表先烈熱血革命。", fact: "青天白日滿地紅，十二道光芒代表一天十二時辰與一年十二個月。" },
+      { continent: "asia", code: "th", name: "泰國 (Thailand) 🇹🇭", hint: "紅白藍白紅五條橫紋，中間深藍條寬度是其他條的兩倍。", fact: "紅代表民族與生命、白代表佛教純潔信仰、深藍代表泰國皇室象徵。" },
+      { continent: "asia", code: "vn", name: "越南 (Vietnam) 🇻🇳", hint: "純紅底中央有一顆金黃色五角大星。", fact: "金星紅旗，紅色象徵革命熱血，五角星代表工、農、兵、知識分子與青年團結。" },
+      { continent: "asia", code: "sg", name: "新加坡 (Singapore) 🇸🇬", hint: "上紅下白雙色，左上角有白色新月與五顆白色五角星。", fact: "新月代表初生之國，五顆星代表民主、和平、進步、正義與平等等五大理想。" },
+      { continent: "asia", code: "my", name: "馬來西亞 (Malaysia) 🇲🇾", hint: "14道紅白橫條，左上深藍角內有黃色新月與14角芒星。", fact: "輝煌條紋，14道條紋代表13個聯邦州與聯邦直轄區團結一體。" },
+      { continent: "asia", code: "id", name: "印尼 (Indonesia) 🇮🇩", hint: "上紅下白雙色橫條，長寬比為標準 2:3 修長矩形。", fact: "紅白旗（Sang Saka Merah Putih），紅代表勇氣，白代表純潔純樸。" },
+      { continent: "asia", code: "in", name: "印度 (India) 🇮🇳", hint: "橙白綠三色橫條，白條中央有深藍色24輪輻法輪。", fact: "三色旗，中央為阿育王法輪（Ashoka Chakra），代表真理、美德與前進。" },
+      { continent: "asia", code: "ph", name: "菲律賓 (Philippines) 🇵🇭", hint: "左側白等邊三角形內有八芒太陽與三顆星，右上藍右下紅。", fact: "太陽的八道光芒代表率先起義的八個省份，戰時會將紅條顛倒置於上方。" },
+      { continent: "asia", code: "sa", name: "沙烏地阿拉伯 (Saudi Arabia) 🇸🇦", hint: "綠底中央有阿拉伯文書法清真言，下方有一把白色寶劍。", fact: "綠色代表伊斯蘭教，清真言意為『萬物非主，唯有真主』，寶劍代表捍衛正義。" },
+      { continent: "asia", code: "tr", name: "土耳其 (Turkey) 🇹🇷", hint: "鮮紅底左方有一枚白色新月與一顆傾斜的五角星。", fact: "星月旗源自鄂圖曼帝國傳奇，象徵古突厥神話與奧斯曼伊斯蘭文明。" },
+
+      // ==================== 歐洲 (Europe) ====================
+      { continent: "europe", code: "fr", name: "法國 (France) 🇫🇷", hint: "縱向藍、白、紅三色，三色旗開山始祖。", fact: "法國大革命三色旗，象徵自由 (Liberté)、平等 (Égalité)、博愛 (Fraternité)。" },
+      { continent: "europe", code: "de", name: "德國 (Germany) 🇩🇪", hint: "橫向黑、紅、金（黃）三色橫條。", fact: "源自拿破崙戰爭時期呂佐夫自由軍團制服，黑夜迎向紅色鮮血，追尋金色自由光明。" },
+      { continent: "europe", code: "it", name: "義大利 (Italy) 🇮🇹", hint: "縱向綠、白、紅三色，與愛爾蘭（綠白橘）不同。", fact: "綠代表平原丘陵，白代表阿爾卑斯白雪，紅代表統一烈士的鮮血。" },
+      { continent: "europe", code: "gb", name: "英國 (United Kingdom) 🇬🇧", hint: "聯合傑克米字旗，融合英格蘭、蘇格蘭與愛爾蘭守護聖人十字。", fact: "由聖喬治紅十字、聖安德魯白斜十字與聖派屈克紅斜十字重疊組合而成。" },
+      { continent: "europe", code: "nl", name: "荷蘭 (Netherlands) 🇳🇱", hint: "橫向紅、白、藍三色，歐洲最早的三色橫條旗。", fact: "源自奧蘭治親王的親王旗，因橘色在海上不易辨識而改為朱紅。" },
+      { continent: "europe", code: "be", name: "比利時 (Belgium) 🇧🇪", hint: "縱向黑、黃、紅三色，色彩順序與德國橫條同源。", fact: "黑黃紅源自布拉班特公國徽章（黑底金獅紅爪）。" },
+      { continent: "europe", code: "ru", name: "俄羅斯 (Russia) 🇷🇺", hint: "橫向純粹白、藍、紅三色，旗面完全沒有國徽。", fact: "泛斯拉夫色彩源頭，白代表高尚純潔、藍代表忠誠、紅代表勇氣與俄羅斯土地。" },
+      { continent: "europe", code: "sk", name: "斯洛伐克 (Slovakia) 🇸🇰", hint: "白藍紅橫條，靠左有紅底盾徽，內有三座藍山與銀白雙十字架。", fact: "雙十字（洛林十字）象徵拜占庭基督教傳統，三座藍山象徵塔特拉山等三大名山。" },
+      { continent: "europe", code: "si", name: "斯洛維尼亞 (Slovenia) 🇸🇮", hint: "白藍紅橫條，左上角盾徽內有特里格拉夫白峰、波浪與三顆金星。", fact: "盾徽中的三峰代表斯國最高峰特里格拉夫峰，下方藍紋代表亞得里亞海。" },
+      { continent: "europe", code: "ro", name: "羅馬尼亞 (Romania) 🇷🇴", hint: "縱向藍、黃、紅三色，藍色為鮮亮的鈷藍色。", fact: "與非洲乍得國旗極度雷同，但羅馬尼亞使用的是鮮明鈷藍色 (Cobalt Blue)。" },
+      { continent: "europe", code: "ch", name: "瑞士 (Switzerland) 🇨🇭", hint: "正方形紅底正中央有粗白希臘十字。", fact: "世界少數正方形國旗之一，白十字代表中立、和平與基督教救贖。" },
+      { continent: "europe", code: "se", name: "瑞典 (Sweden) 🇸🇪", hint: "藍底金黃色北歐十字，象徵藍天與金陽。", fact: "金黃十字偏向旗桿左側，是經典的北歐十字系列之一。" },
+      { continent: "europe", code: "no", name: "挪威 (Norway) 🇳🇴", hint: "紅底加上白邊深藍色北歐十字。", fact: "在丹麥紅底白十字中嵌入代表自由民主的深藍十字而成。" },
+      { continent: "europe", code: "pl", name: "波蘭 (Poland) 🇵🇱", hint: "上白下紅雙色橫條，與印尼、摩納哥紅白完全顛倒！", fact: "上白下紅源自波蘭白鷹徽章，白代表和平、紅代表為自由奮鬥的鮮血。" },
+
+      // ==================== 美洲 (Americas) ====================
+      { continent: "americas", code: "us", name: "美國 (United States) 🇺🇸", hint: "13道紅白相間橫條，左上藍角內有50顆白色五角星。", fact: "星條旗，13條紋代表建國13殖民地，50顆星代表目前50個聯邦州。" },
+      { continent: "americas", code: "ca", name: "加拿大 (Canada) 🇨🇦", hint: "紅白紅三色直條，中央白色方塊內有一片紅色楓樹葉。", fact: "紅白為英國與法國傳統歷史色彩，楓葉則是加拿大最具代表性的大自然象徵。" },
+      { continent: "americas", code: "mx", name: "墨西哥 (Mexico) 🇲🇽", hint: "綠白紅三色直條，中央白色條紋內有老鷹抓蛇立於仙人掌的國徽。", fact: "國徽重現阿茲特克人建都特諾奇蒂特蘭（墨西哥城前身）的神話預言。" },
+      { continent: "americas", code: "br", name: "巴西 (Brazil) 🇧🇷", hint: "綠底中央有黃色菱形，菱形內有深藍星空天球與標語白色飾帶。", fact: "標語為『秩序與進步』(Ordem e Progresso)，星空繪製了獨立當天的里約熱內盧星象。" },
+      { continent: "americas", code: "ar", name: "阿根廷 (Argentina) 🇦🇷", hint: "淺天藍、白、天藍三色橫條，中央有金黃色五月太陽。", fact: "五月太陽有32道光芒（16直16彎），紀念1810年五月革命擺脫西班牙統治。" },
+      { continent: "americas", code: "cl", name: "智利 (Chile) 🇨🇱", hint: "上白下紅，左上角深藍方塊內有一顆白色大五角星。", fact: "孤星旗，藍色代表天空，白色代表安地斯山積雪，紅色代表獨立之血。" },
+      { continent: "americas", code: "co", name: "哥倫比亞 (Colombia) 🇨🇴", hint: "黃藍紅三色橫條，最上方的黃條佔了旗幟的一半寬度。", fact: "米蘭達三色旗，黃色象徵豐富黃金資源，藍色代表海洋，紅代表獨立戰士之血。" },
+      { continent: "americas", code: "pe", name: "秘魯 (Peru) 🇵🇪", hint: "紅白紅垂直三條紋，中間是白色。", fact: "源自聖馬丁將軍在獨立戰爭時看見紅翅白胸火烈鳥的靈感。" },
+      { continent: "americas", code: "cu", name: "古巴 (Cuba) 🇨🇺", hint: "五道藍白相間橫條，左側有紅色等邊三角形與白色孤星。", fact: "孤星旗，紅三角形代表自由、平等、博愛與為獨立犧牲的熱血。" },
+      { continent: "americas", code: "jm", name: "牙買加 (Jamaica) 🇯🇲", hint: "黃色對角交叉十字，上下為綠色三角形，左右為黑色三角形。", fact: "全世界少數完全沒有紅白藍任何一色的國旗，黑色象徵人民力量，綠代表繁茂土地。" },
+      { continent: "americas", code: "uy", name: "烏拉圭 (Uruguay) 🇺🇾", hint: "九道白藍相間橫條，左上角白方塊內有金色五月太陽。", fact: "九道橫條象徵1828年獨立時的九個省份，五月太陽象徵國家主權昇華。" },
+      { continent: "americas", code: "ve", name: "委內瑞拉 (Venezuela) 🇻🇪", hint: "黃藍紅三色橫條，中間藍條內排列著八顆弧形白色五角星。", fact: "八顆白星代表簽署獨立宣言的八個原始省份。" },
+
+      // ==================== 非洲 (Africa) ====================
+      { continent: "africa", code: "td", name: "乍得 (Chad) 🇹🇩", hint: "藍黃紅垂直條紋，左側為深沉的深靛藍色 (Indigo Blue)。", fact: "因早期保留了法國海軍藍的深色調，與歐洲羅馬尼亞國旗長久引發外交互動話題。" },
+      { continent: "africa", code: "eg", name: "埃及 (Egypt) 🇪🇬", hint: "紅白黑三色橫條，中央白色橫條內有一隻金色的薩拉丁雄鷹。", fact: "泛阿拉伯三色，薩拉丁雄鷹象徵勇氣、權威與埃及古文明的光榮。" },
+      { continent: "africa", code: "za", name: "南非 (South Africa) 🇿🇦", hint: "彩虹之旗！黑、黃、綠、白、紅、藍六色融合的橫置 Y 字形圖案。", fact: "橫躺的 Y 字形象徵南非多元族群走向團結融合的新世代。" },
+      { continent: "africa", code: "ng", name: "奈及利亞 (Nigeria) 🇳🇬", hint: "縱向綠、白、綠三條紋，純粹的綠白對稱。", fact: "兩側綠色代表富饒的農業與森林，中央白色象徵團結與和平。" },
+      { continent: "africa", code: "ke", name: "肯亞 (Kenya) 🇰🇪", hint: "黑紅白綠條紋夾細白邊，中央有馬賽族傳統紅黑白防衛盾牌與雙十字長矛。", fact: "傳統馬賽盾矛代表誓死捍衛國家自由，黑色代表人民，紅色代表自由之血。" },
+      { continent: "africa", code: "gh", name: "迦納 (Ghana) 🇬🇭", hint: "紅黃綠橫條紋，中央黃色橫條內有一顆黑色五角星。", fact: "非洲之星旗，黑星是非洲自由與團結的燈塔象徵。" },
+      { continent: "africa", code: "ma", name: "摩洛哥 (Morocco) 🇲🇦", hint: "純紅底中央有一顆深綠色空心五角星（蘇萊曼之印）。", fact: "紅色為阿拉維王朝代表色，綠色五角星象徵伊斯蘭教五大支柱。" },
+      { continent: "africa", code: "sn", name: "塞內加爾 (Senegal) 🇸🇳", hint: "綠黃紅三色直條，中央黃條內有一顆綠色五角星。", fact: "泛非三色搭配中央綠星，象徵非洲大陸從殖民中迎向希望與自主。" },
+      { continent: "africa", code: "cm", name: "喀麥隆 (Cameroon) 🇨🇲", hint: "綠紅黃三色直條，中央紅條內有一顆金黃色五角星。", fact: "中央紅條上的金星稱為『團結之星』，象徵南北喀麥隆合為統一國家。" },
+      { continent: "africa", code: "et", name: "衣索比亞 (Ethiopia) 🇪🇹", hint: "綠黃紅橫條，中央深藍圓徽內有放射光芒的五角金星。", fact: "泛非色彩的起源宗主國，深藍圓星象徵各民族平等繁榮。" },
+      { continent: "africa", code: "gn", name: "幾內亞 (Guinea) 🇬🇳", hint: "縱向紅、黃、綠三色（最左邊是紅色而非藍色）。", fact: "西非第一個脫離法國殖民公投獨立的國家，紅黃綠象徵勞動、正義與團結。" },
+      { continent: "africa", code: "dz", name: "阿爾及利亞 (Algeria) 🇩🇿", hint: "左綠右白各佔一半，中央有紅色新月與紅色五角星。", fact: "綠白兩色源自19世紀反抗英雄阿卜杜·卡迪爾旗幟，新月與星為伊斯蘭教象徵。" },
+
+      // ==================== 大洋洲 (Oceania) ====================
+      { continent: "oceania", code: "au", name: "澳洲 (Australia) 🇦🇺", hint: "深藍底＋左上英國米字旗，右側5顆白星，左下方有巨大七角聯邦星。", fact: "右方南十字座由4顆七角星和1顆五角星組成，左下七角星代表六個州與特區。" },
+      { continent: "oceania", code: "nz", name: "紐西蘭 (New Zealand) 🇳🇿", hint: "深藍底＋左上米字旗，右側只有4顆紅心白邊的五角星。", fact: "紅心白邊的4顆星勾勒出太平洋上空的南十字座星宿。" },
+      { continent: "oceania", code: "fj", name: "斐濟 (Fiji) 🇫🇯", hint: "淺天藍底（太平洋藍），左上米字旗，右側有斐濟聖喬治紅十字盾徽。", fact: "太平洋藍船旗，盾徽內有可可果、甘蔗、椰子樹與和平白鴿。" },
+      { continent: "oceania", code: "pg", name: "巴布亞紐幾內亞 (Papua New Guinea) 🇵🇬", hint: "對角線切成黑紅兩半，黑角有南十字星，紅角有金色極樂鳥（天堂鳥）展翅。", fact: "極樂鳥為國鳥，象徵新興國家誕生與自由高飛。" },
+      { continent: "oceania", code: "pw", name: "帛琉 (Palau) 🇵🇼", hint: "湛藍海藍底，中央稍偏左有一輪金黃色滿月圓形。", fact: "湛藍象徵太平洋，金黃圓月象徵和平、寧靜、收穫與大自然之愛。" },
+      { continent: "oceania", code: "ws", name: "薩摩亞 (Samoa) 🇼🇸", hint: "純紅底，左上角深藍方塊內有白色南十字座五顆星。", fact: "紅色象徵勇氣，白色代表純潔，藍色代表自由。" },
+      { continent: "oceania", code: "tv", name: "吐瓦魯 (Tuvalu) 🇹🇻", hint: "天藍底＋左上米字旗，右方散落著9顆金色五角星。", fact: "9顆金星代表組成吐瓦魯的9座主要環礁島嶼地理位置。" },
+      { continent: "oceania", code: "sb", name: "索羅門群島 (Solomon Islands) 🇸🇧", hint: "黃色細條斜線對角分開藍綠兩色，左上藍角有5顆白色五角星。", fact: "藍色象徵海洋，綠色象徵群島大地，5顆星代表最初的5個主要行政區。" }
+    ];
+
+    /**
+     * 3. 遊戲主控制器 (Game Controller)
+     */
+    class FlagMasterGame {
+      constructor() {
+        this.sound = new SoundEngine();
+        this.currentZoneId = null;
+        this.zoneQuestionQueue = [];
+        this.currentQuestionIndex = 0;
+        this.currentQuestionData = null;
+        
+        this.totalErrorsInRound = 0;
+        this.firstTrySuccessCount = 0;
+        this.questionHadError = false;
+        this.reviewedFlags = []; // 儲存本輪遇到過的國旗
+        
+        this.timerInterval = null;
+        this.secondsElapsed = 0;
+        this.ROUND_COUNT = 5; // 每一輪隨機抽測 5 題
+
+        // 快取 DOM 節點
+        this.dom = {
+          viewContinentSelect: document.getElementById('viewContinentSelect'),
+          viewLevel: document.getElementById('viewLevel'),
+          viewFinish: document.getElementById('viewFinish'),
+
+          continentGrid: document.getElementById('continentGrid'),
+          btnNavHome: document.getElementById('btnNavHome'),
+          btnBackToContinents: document.getElementById('btnBackToContinents'),
+          btnSoundToggle: document.getElementById('btnSoundToggle'),
+          soundIcon: document.getElementById('soundIcon'),
+
+          currentZoneBadge: document.getElementById('currentZoneBadge'),
+          progressBarFill: document.getElementById('progressBarFill'),
+          btnToggleHint: document.getElementById('btnToggleHint'),
+          hintDrawer: document.getElementById('hintDrawer'),
+          hintContentText: document.getElementById('hintContentText'),
+          targetCountryText: document.getElementById('targetCountryText'),
+          flagsGrid: document.getElementById('flagsGrid'),
+
+          stampOverlay: document.getElementById('stampOverlay'),
+          rubberStamp: document.getElementById('rubberStamp'),
+          stampCountryTitle: document.getElementById('stampCountryTitle'),
+          stampCountryFact: document.getElementById('stampCountryFact'),
+          btnNextQuestion: document.getElementById('btnNextQuestion'),
+
+          alertOverlay: document.getElementById('alertOverlay'),
+          alertList: document.getElementById('alertList'),
+          btnCloseAlert: document.getElementById('btnCloseAlert'),
+
+          finishIcon: document.getElementById('finishIcon'),
+          finishTitle: document.getElementById('finishTitle'),
+          finishSubtitle: document.getElementById('finishSubtitle'),
+          statAccuracy: document.getElementById('statAccuracy'),
+          statErrors: document.getElementById('statErrors'),
+          statTime: document.getElementById('statTime'),
+          reviewList: document.getElementById('reviewList'),
+          btnRestartZone: document.getElementById('btnRestartZone'),
+          btnReturnToContinents: document.getElementById('btnReturnToContinents')
+        };
+
+        this.init();
+      }
+
+      init() {
+        this.renderContinentSelection();
+        this.bindEvents();
+      }
+
+      bindEvents() {
+        // 音效切換
+        this.dom.btnSoundToggle.addEventListener('click', () => {
+          const isEnabled = this.sound.toggle();
+          this.dom.soundIcon.textContent = isEnabled ? '🔊' : '🔇';
+          if (isEnabled) this.sound.playTick();
+        });
+
+        // 提示抽屜
+        this.dom.btnToggleHint.addEventListener('click', () => {
+          this.sound.playTick();
+          const isOpen = this.dom.hintDrawer.classList.toggle('open');
+          this.dom.btnToggleHint.setAttribute('aria-expanded', isOpen);
+        });
+
+        // 回首頁/選擇洲別
+        const goBackToSelection = (e) => {
+          if (e) e.preventDefault();
+          this.sound.playTick();
+          this.stopTimer();
+          this.switchView('continentSelect');
+          this.dom.btnBackToContinents.style.display = 'none';
+        };
+
+        this.dom.btnNavHome.addEventListener('click', goBackToSelection);
+        this.dom.btnBackToContinents.addEventListener('click', goBackToSelection);
+        this.dom.btnReturnToContinents.addEventListener('click', goBackToSelection);
+
+        // 重新挑戰本洲
+        this.dom.btnRestartZone.addEventListener('click', () => {
+          this.sound.playTick();
+          this.startRound(this.currentZoneId);
+        });
+
+        // 下一題按鈕
+        this.dom.btnNextQuestion.addEventListener('click', () => {
+          this.sound.playTick();
+          this.dom.stampOverlay.classList.remove('active');
+          this.nextQuestion();
+        });
+
+        // 關閉警報彈窗 (允許重選)
+        this.dom.btnCloseAlert.addEventListener('click', () => {
+          this.sound.playTick();
+          this.dom.alertOverlay.classList.remove('active');
+        });
+      }
+
+      switchView(viewName) {
+        this.dom.viewContinentSelect.classList.remove('active');
+        this.dom.viewLevel.classList.remove('active');
+        this.dom.viewFinish.classList.remove('active');
+
+        if (viewName === 'continentSelect') {
+          this.dom.viewContinentSelect.classList.add('active');
+        } else if (viewName === 'level') {
+          this.dom.viewLevel.classList.add('active');
+        } else if (viewName === 'finish') {
+          this.dom.viewFinish.classList.add('active');
+        }
+      }
+
+      startTimer() {
+        this.secondsElapsed = 0;
+        clearInterval(this.timerInterval);
+        this.timerInterval = setInterval(() => {
+          this.secondsElapsed++;
+        }, 1000);
+      }
+
+      stopTimer() {
+        clearInterval(this.timerInterval);
+      }
+
+      formatTime(seconds) {
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      }
+
+      /**
+       * 渲染五大洲選擇卡片
+       */
+      renderContinentSelection() {
+        this.dom.continentGrid.innerHTML = '';
+        CONTINENT_DEFINITIONS.forEach(zone => {
+          const card = document.createElement('div');
+          card.className = 'continent-card';
+          card.tabIndex = 0;
+          card.setAttribute('role', 'button');
+          card.setAttribute('aria-label', `選擇 ${zone.name}`);
+
+          card.innerHTML = `
+            <div class="continent-header">
+              <span class="continent-icon">${zone.icon}</span>
+              <span class="continent-tag">${zone.tag}</span>
+            </div>
+            <h3 class="continent-name">${zone.name}</h3>
+            <p class="continent-subtext">${zone.desc}</p>
+            <div class="continent-cta">
+              <span>進入該洲安檢</span>
+              <span class="arrow">➔</span>
+            </div>
+          `;
+
+          const handleSelect = () => {
+            this.sound.playTick();
+            this.startRound(zone.id);
+          };
+
+          card.addEventListener('click', handleSelect);
+          card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleSelect();
+            }
+          });
+
+          this.dom.continentGrid.appendChild(card);
+        });
+      }
+
+      /**
+       * 根據所選洲別，亂數產生一輪題目佇列 (動態出題引擎)
+       */
+      startRound(zoneId) {
+        this.currentZoneId = zoneId;
+        this.totalErrorsInRound = 0;
+        this.firstTrySuccessCount = 0;
+        this.reviewedFlags = [];
+        this.currentQuestionIndex = 0;
+
+        // 1. 取得該洲的候選國旗池
+        let pool = [];
+        if (zoneId === 'global') {
+          pool = [...FLAG_DATABASE];
+        } else {
+          pool = FLAG_DATABASE.filter(f => f.continent === zoneId);
+        }
+
+        // 打亂題庫池
+        const shuffledPool = [...pool].sort(() => Math.random() - 0.5);
+
+        // 2. 取出前 ROUND_COUNT 個作為目標題目
+        const totalQuestions = Math.min(this.ROUND_COUNT, shuffledPool.length);
+        const targetCountries = shuffledPool.slice(0, totalQuestions);
+
+        // 3. 為每個目標題目生成 2 個干擾項 (共 3 選 1)
+        this.zoneQuestionQueue = targetCountries.map((target, qIndex) => {
+          // 干擾項優先從同洲其他國家選取
+          const otherInZone = pool.filter(f => f.code !== target.code);
+          const shuffledOthers = [...otherInZone].sort(() => Math.random() - 0.5);
+          const distractors = shuffledOthers.slice(0, 2);
+
+          // 組合三個選項並洗牌
+          const options = [
+            { ...target, isCorrect: true },
+            { ...distractors[0], isCorrect: false },
+            { ...distractors[1], isCorrect: false }
+          ].sort(() => Math.random() - 0.5);
+
+          return {
+            qNum: qIndex + 1,
+            target: target,
+            options: options
+          };
+        });
+
+        // 啟動計時與畫面
+        this.startTimer();
+        this.dom.btnBackToContinents.style.display = 'inline-flex';
+        this.switchView('level');
+        this.loadQuestion(0);
+      }
+
+      /**
+       * 載入單一題目到畫面
+       */
+      loadQuestion(qIndex) {
+        this.currentQuestionIndex = qIndex;
+        this.questionHadError = false;
+        const qData = this.zoneQuestionQueue[qIndex];
+        this.currentQuestionData = qData;
+
+        // 關閉提示抽屜
+        this.dom.hintDrawer.classList.remove('open');
+        this.dom.btnToggleHint.setAttribute('aria-expanded', 'false');
+
+        // 找到當前洲名
+        const zoneObj = CONTINENT_DEFINITIONS.find(z => z.id === this.currentZoneId);
+        const zoneName = zoneObj ? zoneObj.name : '分區查驗';
+
+        // 更新頂部狀態列
+        const total = this.zoneQuestionQueue.length;
+        this.dom.currentZoneBadge.textContent = `${zoneObj.icon} ${zoneName} · 任務 ${String(qIndex + 1).padStart(2, '0')}/${String(total).padStart(2, '0')}`;
+        
+        // 進度條
+        const pct = Math.round(((qIndex) / total) * 100);
+        this.dom.progressBarFill.style.width = `${pct}%`;
+
+        // 更新目標國家告示與情資
+        this.dom.targetCountryText.textContent = qData.target.name;
+        this.dom.hintContentText.textContent = `【鑑旗情資】：${qData.target.hint}`;
+
+        // 動態生成 3 選 1 純旗幟卡片 (無國名、無代碼)
+        this.dom.flagsGrid.innerHTML = '';
+        qData.options.forEach((opt, idx) => {
+          const card = document.createElement('div');
+          card.className = 'flag-card';
+          card.tabIndex = 0;
+          card.setAttribute('role', 'button');
+          card.setAttribute('aria-label', `檢驗樣品 #${String(idx + 1).padStart(2, '0')}`);
+
+          const flagUrlPng = `https://flagcdn.com/w640/${opt.code}.png`;
+          const flagUrlSvg = `https://flagcdn.com/${opt.code}.svg`;
+
+          card.innerHTML = `
+            <span class="flag-badge-num">SAMPLE #${String(idx + 1).padStart(2, '0')}</span>
+            <div class="flag-img-container">
+              <img class="flag-img" src="${flagUrlPng}" alt="待查驗國旗樣品 #${idx + 1}" loading="eager" onerror="this.src='${flagUrlSvg}'">
+            </div>
+            <div style="width: 100%;">
+              <div class="btn-verify-chip">
+                <span>🔍</span>
+                <span>確認查驗此旗</span>
+              </div>
+            </div>
+          `;
+
+          const handleSelect = () => {
+            this.handleChoice(opt, card);
+          };
+
+          card.addEventListener('click', handleSelect);
+          card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleSelect();
+            }
+          });
+
+          this.dom.flagsGrid.appendChild(card);
+        });
+      }
+
+      /**
+       * 作答判定機制
+       */
+      handleChoice(selectedOpt, cardElement) {
+        const qData = this.currentQuestionData;
+
+        if (selectedOpt.isCorrect) {
+          // ==================== 答對機制 ====================
+          if (!this.questionHadError) {
+            this.firstTrySuccessCount++;
+          }
+
+          // 記錄該國旗至複習清單 (若尚未存在)
+          if (!this.reviewedFlags.some(f => f.code === qData.target.code)) {
+            this.reviewedFlags.push(qData.target);
+          }
+
+          // 播放音效
+          this.sound.playSuccess();
+          setTimeout(() => this.sound.playStamp(), 180);
+
+          // 彈出通關蓋印
+          this.showApprovedModal(qData.target);
+
+        } else {
+          // ==================== 答錯機制 ====================
+          this.totalErrorsInRound++;
+          this.questionHadError = true;
+
+          // 警報音效與震動
+          this.sound.playError();
+          cardElement.classList.add('shake-error');
+          setTimeout(() => cardElement.classList.remove('shake-error'), 500);
+
+          // 延遲展示警報對照彈窗
+          setTimeout(() => {
+            this.showAlertModal(qData, selectedOpt);
+          }, 350);
+        }
+      }
+
+      showApprovedModal(target) {
+        this.dom.rubberStamp.classList.remove('slammed');
+        this.dom.stampOverlay.classList.add('active');
+
+        requestAnimationFrame(() => {
+          this.dom.rubberStamp.classList.add('slammed');
+        });
+
+        this.dom.stampCountryTitle.textContent = `查驗成功！正確放行 ${target.name}`;
+        this.dom.stampCountryFact.textContent = `【特工檔案】：${target.fact}`;
+
+        const isLast = (this.currentQuestionIndex === this.zoneQuestionQueue.length - 1);
+        this.dom.btnNextQuestion.innerHTML = isLast 
+          ? `<span>完成本洲巡迴，查看評級</span><span aria-hidden="true">🏆</span>`
+          : `<span>下一題查驗</span><span aria-hidden="true">➔</span>`;
+      }
+
+      showAlertModal(qData, wrongOpt) {
+        this.dom.alertList.innerHTML = '';
+
+        qData.options.forEach(opt => {
+          const item = document.createElement('div');
+          item.className = `alert-item ${opt.isCorrect ? 'is-target' : ''}`;
+
+          const flagUrl = `https://flagcdn.com/w640/${opt.code}.png`;
+          const statusTag = opt.isCorrect 
+            ? '<span style="color: var(--emerald-pass); font-weight: bold;">[正確目標國]</span>'
+            : (opt.code === wrongOpt.code ? '<span style="color: var(--rose-danger); font-weight: bold;">[你剛才誤選的]</span>' : '<span style="color: var(--text-dim);">[干擾選項]</span>');
+
+          item.innerHTML = `
+            <img class="alert-thumb" src="${flagUrl}" alt="${opt.name}">
+            <div class="alert-info">
+              <h4>${opt.name} ${statusTag}</h4>
+              <p>${opt.hint} ${opt.fact}</p>
+            </div>
+          `;
+          this.dom.alertList.appendChild(item);
+        });
+
+        this.dom.alertOverlay.classList.add('active');
+      }
+
+      nextQuestion() {
+        if (this.currentQuestionIndex < this.zoneQuestionQueue.length - 1) {
+          this.loadQuestion(this.currentQuestionIndex + 1);
+        } else {
+          this.finishRound();
+        }
+      }
+
+      /**
+       * 通關結算
+       */
+      finishRound() {
+        this.stopTimer();
+        this.sound.playSuccess();
+
+        // 進度條滿格 100%
+        this.dom.progressBarFill.style.width = '100%';
+
+        const total = this.zoneQuestionQueue.length;
+        const accuracyRate = Math.round((this.firstTrySuccessCount / total) * 100);
+
+        this.dom.statAccuracy.textContent = `${accuracyRate}%`;
+        this.dom.statErrors.textContent = `${this.totalErrorsInRound} 次`;
+        this.dom.statTime.textContent = this.formatTime(this.secondsElapsed);
+
+        // 評定稱號
+        if (this.totalErrorsInRound === 0) {
+          this.dom.finishIcon.textContent = '👑';
+          this.dom.finishTitle.textContent = '神眼特級鑑旗官！S級完美通關';
+          this.dom.finishSubtitle.textContent = '五發全中零失誤！你對該洲國旗的敏銳度已達海關總署最高標準。';
+        } else if (this.totalErrorsInRound <= 2) {
+          this.dom.finishIcon.textContent = '🎖️';
+          this.dom.finishTitle.textContent = '資深海關查驗員！A級過關';
+          this.dom.finishSubtitle.textContent = '辨識能力相當出色！成功識破了相似旗幟的偽裝陷阱。';
+        } else {
+          this.dom.finishIcon.textContent = '🔍';
+          this.dom.finishTitle.textContent = '查驗合格特勤員！通關達成';
+          this.dom.finishSubtitle.textContent = '成功完成本洲安檢巡迴！複習下方重點筆記，多加練習必定能零失誤！';
+        }
+
+        // 渲染本輪遇到的國旗知識速記清單
+        this.dom.reviewList.innerHTML = '';
+        this.reviewedFlags.forEach(f => {
+          const li = document.createElement('li');
+          li.className = 'review-item';
+          li.innerHTML = `<strong>${f.name}</strong>：${f.hint} <em>(${f.fact})</em>`;
+          this.dom.reviewList.appendChild(li);
+        });
+
+        this.switchView('finish');
+      }
+    }
+
+    // 啟動遊戲實例
+    document.addEventListener('DOMContentLoaded', () => {
+      window.flagGameApp = new FlagMasterGame();
+    });
+  </script>
+</body>
+</html>
